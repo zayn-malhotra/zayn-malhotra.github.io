@@ -1,1 +1,189 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Family Plan Dashboard Demo</title>
+  <style>
+    /* Responsive & vibrant styling */
+    body { margin:0; font-family: Arial, sans-serif; background:#f1f3f4; color:#202124; }
+    header, section { padding:16px; }
+    header { background:#fff; border-bottom:1px solid #ddd; position:sticky; top:0; display:flex; align-items:center; z-index:10; }
+    #logo { height:28px; margin-right:12px; }
+    h1 { margin:0; font-size:20px; flex:1; }
+    table { width:100%; border-collapse:collapse; margin-bottom:16px; }
+    th, td { padding:12px 8px; text-align:left; border-bottom:1px solid #eee; }
+    th { background:#f1f3f4; font-weight:bold; }
+    .row-phone { background:#e8f0fe; }
+    .row-data, .row-extra { background:#e8f5e9; }
+    .separator-row td { background:#ddd; text-align:center; font-weight:bold; padding:8px; }
+    .highlight { font-weight:bold; color:#202124; margin-top:8px; }
+    .button { display:block; width:100%; background:#ccc; color:#666; text-align:center; padding:12px; font-weight:bold; border:none; border-radius:6px; font-size:16px; margin-top:8px; cursor:not-allowed; }
+    .button.enabled { background:#f8ff3c; color:#000; cursor:pointer; transition:background .3s; }
+    .button.enabled:hover { background:#e0e733; }
+    #loader, #purchaseLoader { text-align:center; padding:32px; background:#fff; border:1px solid #ddd; border-radius:6px; margin-bottom:16px; }
+    .spinner { border:4px solid #eee; border-top:4px solid #4285f4; border-radius:50%; width:32px; height:32px; animation:spin 1s linear infinite; margin:0 auto 16px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .checkmark { font-size:48px; color:green; animation:pop 0.6s ease-out; }
+    @keyframes pop { 0% { transform:scale(0); } 60% { transform:scale(1.2); } 100% { transform:scale(1); } }
+  </style>
+</head>
+<body>
+  <header>
+    <img id="logo" src="verizon-logo.jpg" alt="Verizon logo">
+    <h1>Family Plan Dashboard</h1>
+    <div id="userStatus">Logged in as Zayn</div>
+  </header>
+  <main>
+    <section id="planSection">
+      <div id="loader">
+        <div class="spinner"></div>
+        <p>🔄 Computing your optimal family plan...</p>
+      </div>
+      <div id="planTableContainer" style="display:none;">
+        <h2>Device &amp; Plan Comparison</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Device</th><th>Current SIM</th><th>Current Cost</th><th>New Plan Cost</th>
+            </tr>
+          </thead>
+          <tbody id="planTableBody"></tbody>
+        </table>
+        <div class="highlight" id="totals"></div>
+        <div>
+          <input type="checkbox" id="termsCheckbox">
+          <label for="termsCheckbox">I accept the <a href="#">Terms &amp; Conditions</a></label>
+        </div>
+        <button id="purchaseButton" class="button" disabled>Purchase New Plan</button>
+      </div>
+    </section>
+
+    <section id="purchaseLoader" style="display:none;">
+      <div class="spinner"></div>
+      <p>Processing your purchase...</p>
+    </section>
+
+    <section id="successMessage" style="display:none; text-align:center; padding:16px;">
+      <div class="checkmark">✔</div>
+      <p>Success! Close this page to see your new SIMs provisioned.</p>
+    </section>
+  </main>
+  <script>
+    // Data
+    const devices = [
+      { name: "Zayn's iPhone 12Pro", number: "510-619-5622", type:'phone' },
+      { name: "Jamie’s iPhone 14Pro", number: "650-193-5291", type:'phone' },
+      { name: "Sarah’s iPhone 12Pro", number: "650-191-3220", type:'phone' },
+      { name: "Coco’s iPhone 13", number: "650-293-2475", type:'phone' }
+    ];
+    const dataDevices = [
+      { name: "Granny’s iPad Pro", number: "", type:'data' },
+      { name: "Zayn’s Apple Watch 10", number: "", type:'data' }
+    ];
+    const extraSim = { name: 'Extra eSIM', number:'—', type:'phone' };
+
+    // Pricing
+    const currentPhoneRate = 35, currentDataRate = 0;
+    const newPhoneRate = 20, newDataRate = 10, extraSimRate = 20;
+
+    function formatCost(cost) {
+      return cost > 0 ? `$${cost}` : '—';
+    }
+
+    function renderPlanTable() {
+      const tbody = document.getElementById('planTableBody');
+      let currentTotal = 0, newTotal = 0;
+      let idx = 1;
+
+      // Phone lines
+      devices.forEach(d => {
+        const currentCost = currentPhoneRate;
+        const newCost = newPhoneRate;
+        currentTotal += currentCost;
+        newTotal += newCost;
+        const tr = document.createElement('tr');
+        tr.className = 'row-phone';
+        tr.innerHTML = `
+          <td>${idx++}</td>
+          <td>${d.name}</td>
+          <td>${d.number}</td>
+          <td>${formatCost(currentCost)}</td>
+          <td>${formatCost(newCost)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Separator
+      const sep = document.createElement('tr'); sep.className='separator-row';
+      sep.innerHTML = '<td colspan="5">Additional Lines</td>';
+      tbody.appendChild(sep);
+
+      // Data-only devices
+      dataDevices.forEach(d => {
+        const currentCost = currentDataRate;
+        const newCost = newDataRate;
+        currentTotal += currentCost;
+        newTotal += newCost;
+        const tr = document.createElement('tr');
+        tr.className = 'row-data';
+        tr.innerHTML = `
+          <td>${idx++}</td>
+          <td>${d.name} (data-only)</td>
+          <td>—</td>
+          <td>${formatCost(currentCost)}</td>
+          <td>${formatCost(newCost)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Extra eSIM
+      currentTotal += 0;
+      newTotal += extraSimRate;
+      const trExtra = document.createElement('tr');
+      trExtra.className='row-extra';
+      trExtra.innerHTML = `
+        <td>${idx++}</td>
+        <td>${extraSim.name}</td>
+        <td>${extraSim.number}</td>
+        <td>—</td>
+        <td>${formatCost(extraSimRate)}</td>
+      `;
+      tbody.appendChild(trExtra);
+
+      // Totals
+      const saving = currentTotal - newTotal;
+      document.getElementById('totals').textContent =
+        `Current Total: $${currentTotal} • New Total: $${newTotal} ${saving>0?`(You save $${saving}/mo!)`:''}`;
+    }
+
+    // Init
+    setTimeout(() => {
+      document.getElementById('loader').style.display='none';
+      document.getElementById('planTableContainer').style.display='block';
+      renderPlanTable();
+    }, 1500);
+
+    // Purchase flow with delay
+    const terms = document.getElementById('termsCheckbox');
+    const purchaseBtn = document.getElementById('purchaseButton');
+    terms.onchange = () => {
+      if (terms.checked) {
+        purchaseBtn.disabled = false;
+        purchaseBtn.classList.add('enabled');
+      } else {
+        purchaseBtn.disabled = true;
+        purchaseBtn.classList.remove('enabled');
+      }
+    };
+    purchaseBtn.onclick = () => {
+      document.getElementById('planSection').style.display = 'none';
+      document.getElementById('purchaseLoader').style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('purchaseLoader').style.display = 'none';
+        document.getElementById('successMessage').style.display = 'block';
+      }, 1500);
+    };
+  </script>
+</body>
+</html>
