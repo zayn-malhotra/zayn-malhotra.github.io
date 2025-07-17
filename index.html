@@ -30,15 +30,15 @@
 </head>
 <body>
   <header>
-    <img id="logo" src="verizayn-logo.png" alt="Verizon logo">
+    <img id="logo" src="verizayn-logo.png" alt="VeriZayn logo">
     <h1>Family Plan Dashboard</h1>
-    <div id="userStatus"></div>
+    <div id="userStatus">Logged in as Zayn</div>
   </header>
   <main>
     <section id="planSection">
       <div id="loader">
         <div class="spinner"></div>
-        <p>Computing your optimal family plan...</p>
+        <p>🔄 Computing your optimal family plan...</p>
       </div>
       <div id="planTableContainer" style="display:none;">
         <h2>Device &amp; Plan Comparison</h2>
@@ -71,22 +71,27 @@
   </main>
   <script>
     // Data
-    const devices = [
-      { name: "Zayn's iPhone 12Pro", number: "408-769-0-14", type:'phone' },
-      { name: "Jamie’s iPhone 14Pro", number: "", type:'data' },
-      { name: "Robert’s iPhone 16", number: "669-320-8341", type:'phone' },
-      { name: "Sarah’s iPhone 12 Pro", number: "713-684-9302", type:'phone' },
-      { name: "Coco’s iPhone 16 Pro Max", number: "669-298-8643", type:'phone' }
+    const primaryPhones = [
+      { name: "Zayn's iPhone 12Pro", number: "408-769-0-14" },
+      { name: "Robert’s iPhone 16", number: "669-320-8341" },
+      { name: "Sarah’s iPhone 12 Pro", number: "713-684-9302" },
+      { name: "Coco’s iPhone 16 Pro Max", number: "669-298-8643" }
+    ];
+    const additionalPhones = [
+      { name: "Jamie’s iPhone 14Pro", number: "" }
     ];
     const dataDevices = [
-      { name: "Granny’s iPad Pro", number: "", type:'data' },
-      { name: "Zayn’s Apple Watch 10", number: "", type:'data' }
+      { name: "Granny’s iPad Pro", number: "" },
+      { name: "Zayn’s Apple Watch 10", number: "" }
     ];
-    const extraSim = { name: 'Extra eSIM', number:'—', type:'phone' };
+    const extraSim = { name: 'Extra eSIM', number:'—' };
 
     // Pricing
-    const currentPhoneRate = 35, currentDataRate = 0;
-    const newPhoneRate = 20, newDataRate = 10, extraSimRate = 20;
+    const currentPhoneRate = 35;
+    const currentDataRate = 0;
+    const newPhoneRate = 20;
+    const newDataRate = 10;
+    const extraSimRate = 20;
 
     function formatCost(cost) {
       return cost > 0 ? `$${cost}` : '—';
@@ -97,60 +102,81 @@
       let currentTotal = 0, newTotal = 0;
       let idx = 1;
 
-      // Phone lines
-      devices.forEach(d => {
-        const currentCost = currentPhoneRate;
-        const newCost = newPhoneRate;
-        currentTotal += currentCost;
-        newTotal += newCost;
-        const tr = document.createElement('tr');
-        tr.className = 'row-phone';
+      // Primary phone lines
+      primaryPhones.forEach(d => {
+        const curr = currentPhoneRate;
+        const nue = newPhoneRate;
+        currentTotal += curr;
+        newTotal += nue;
+        const tr = document.createElement('tr'); tr.className='row-phone';
         tr.innerHTML = `
           <td>${idx++}</td>
           <td>${d.name}</td>
-          <td>${d.number}</td>
-          <td>${formatCost(currentCost)}</td>
-          <td>${formatCost(newCost)}</td>
+          <td>${d.number||'—'}</td>
+          <td>${formatCost(curr)}</td>
+          <td>${formatCost(nue)}</td>
         `;
         tbody.appendChild(tr);
       });
 
-      // Separator
-      const sep = document.createElement('tr'); sep.className='separator-row';
-      sep.innerHTML = '<td colspan="5">Additional Lines</td>';
-      tbody.appendChild(sep);
+      // Separator for additional lines
+      const sep1 = document.createElement('tr'); sep1.className='separator-row';
+      sep1.innerHTML = '<td colspan="5">Additional Phone Lines</td>';
+      tbody.appendChild(sep1);
 
-      // Data-only devices
-      dataDevices.forEach(d => {
-        const currentCost = currentDataRate;
-        const newCost = newDataRate;
-        currentTotal += currentCost;
-        newTotal += newCost;
-        const tr = document.createElement('tr');
-        tr.className = 'row-data';
+      // Additional phones (no current SIM)
+      additionalPhones.forEach(d => {
+        const curr = 0;
+        const nue = newPhoneRate;
+        currentTotal += curr;
+        newTotal += nue;
+        const tr = document.createElement('tr'); tr.className='row-phone';
         tr.innerHTML = `
           <td>${idx++}</td>
-          <td>${d.name} (data-only)</td>
+          <td>${d.name}</td>
           <td>—</td>
-          <td>${formatCost(currentCost)}</td>
-          <td>${formatCost(newCost)}</td>
+          <td>${formatCost(curr)}</td>
+          <td>${formatCost(nue)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Separator for data-only
+      const sep2 = document.createElement('tr'); sep2.className='separator-row';
+      sep2.innerHTML = '<td colspan="5">Additional Data Lines</td>';
+      tbody.appendChild(sep2);
+
+      // Data devices
+      dataDevices.forEach(d => {
+        const curr = currentDataRate;
+        const nue = newDataRate;
+        currentTotal += curr;
+        newTotal += nue;
+        const tr = document.createElement('tr'); tr.className='row-data';
+        tr.innerHTML = `
+          <td>${idx++}</td>
+          <td>${d.name}</td>
+          <td>—</td>
+          <td>${formatCost(curr)}</td>
+          <td>${formatCost(nue)}</td>
         `;
         tbody.appendChild(tr);
       });
 
       // Extra eSIM
-      currentTotal += 0;
-      newTotal += extraSimRate;
-      const trExtra = document.createElement('tr');
-      trExtra.className='row-extra';
-      trExtra.innerHTML = `
+      const currE = 0;
+      const nueE = extraSimRate;
+      currentTotal += currE;
+      newTotal += nueE;
+      const trE = document.createElement('tr'); trE.className='row-extra';
+      trE.innerHTML = `
         <td>${idx++}</td>
         <td>${extraSim.name}</td>
         <td>${extraSim.number}</td>
-        <td>—</td>
-        <td>${formatCost(extraSimRate)}</td>
+        <td>${formatCost(currE)}</td>
+        <td>${formatCost(nueE)}</td>
       `;
-      tbody.appendChild(trExtra);
+      tbody.appendChild(trE);
 
       // Totals
       const saving = currentTotal - newTotal;
@@ -165,7 +191,7 @@
       renderPlanTable();
     }, 1500);
 
-    // Purchase flow with delay
+    // Purchase flow
     const terms = document.getElementById('termsCheckbox');
     const purchaseBtn = document.getElementById('purchaseButton');
     terms.onchange = () => {
@@ -178,11 +204,11 @@
       }
     };
     purchaseBtn.onclick = () => {
-      document.getElementById('planSection').style.display = 'none';
-      document.getElementById('purchaseLoader').style.display = 'block';
+      document.getElementById('planSection').style.display='none';
+      document.getElementById('purchaseLoader').style.display='block';
       setTimeout(() => {
-        document.getElementById('purchaseLoader').style.display = 'none';
-        document.getElementById('successMessage').style.display = 'block';
+        document.getElementById('purchaseLoader').style.display='none';
+        document.getElementById('successMessage').style.display='block';
       }, 1500);
     };
   </script>
