@@ -72,7 +72,7 @@
   <script>
     // Data
     const primaryPhones = [
-      { name: "Zayn's iPhone 12Pro", number: "408-769-0-14" },
+      { name: "Zayn's iPhone 12Pro", number: "408-769-9014" },
       { name: "Robert’s iPhone 16", number: "669-320-8341" },
       { name: "Sarah’s iPhone 12 Pro", number: "713-684-9302" },
       { name: "Coco’s iPhone 16 Pro Max", number: "669-298-8643" }
@@ -119,7 +119,7 @@
         tbody.appendChild(tr);
       });
 
-      // Separator for additional lines
+      // Separator for additional phone lines
       const sep1 = document.createElement('tr'); sep1.className='separator-row';
       sep1.innerHTML = '<td colspan="5">Additional Phone Lines</td>';
       tbody.appendChild(sep1);
@@ -130,7 +130,7 @@
         const nue = newPhoneRate;
         currentTotal += curr;
         newTotal += nue;
-        const tr = document.createElement('tr'); tr.className='row-phone';
+        const tr = document.createElement('tr'); tr.className='row-extra';
         tr.innerHTML = `
           <td>${idx++}</td>
           <td>${d.name}</td>
@@ -141,9 +141,9 @@
         tbody.appendChild(tr);
       });
 
-      // Separator for data-only
+      // Separator for data-only lines
       const sep2 = document.createElement('tr'); sep2.className='separator-row';
-      sep2.innerHTML = '<td colspan="5">Additional Data Lines</td>';
+      sep2.innerHTML = '<td colspan="5">Additional Data-Only Lines</td>';
       tbody.appendChild(sep2);
 
       // Data devices
@@ -163,7 +163,7 @@
         tbody.appendChild(tr);
       });
 
-      // Extra eSIM
+      // Extra eSIM also as additional phone line
       const currE = 0;
       const nueE = extraSimRate;
       currentTotal += currE;
