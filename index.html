@@ -15,7 +15,7 @@
     th, td { padding:12px 8px; text-align:left; border-bottom:1px solid #eee; }
     th { background:#f1f3f4; font-weight:bold; }
     .row-phone { background:#e8f0fe; }
-    .row-data, .row-extra { background:#e8f5e9; }
+    .row-extra, .row-data { background:#e8f5e9; }
     .separator-row td { background:#ddd; text-align:center; font-weight:bold; padding:8px; }
     .highlight { font-weight:bold; color:#202124; margin-top:8px; }
     .button { display:block; width:100%; background:#ccc; color:#666; text-align:center; padding:12px; font-weight:bold; border:none; border-radius:6px; font-size:16px; margin-top:8px; cursor:not-allowed; }
@@ -38,7 +38,7 @@
     <section id="planSection">
       <div id="loader">
         <div class="spinner"></div>
-        <p>Computing your optimal family plan...</p>
+        <p>🔄 Computing your optimal family plan...</p>
       </div>
       <div id="planTableContainer" style="display:none;">
         <h2>Device &amp; Plan Comparison</h2>
@@ -141,6 +141,23 @@
         tbody.appendChild(tr);
       });
 
+      // Extra eSIM also as additional phone line
+      {
+        const currE = 0;
+        const nueE = extraSimRate;
+        currentTotal += currE;
+        newTotal += nueE;
+        const trE = document.createElement('tr'); trE.className='row-extra';
+        trE.innerHTML = `
+          <td>${idx++}</td>
+          <td>${extraSim.name}</td>
+          <td>${extraSim.number}</td>
+          <td>${formatCost(currE)}</td>
+          <td>${formatCost(nueE)}</td>
+        `;
+        tbody.appendChild(trE);
+      }
+
       // Separator for data-only lines
       const sep2 = document.createElement('tr'); sep2.className='separator-row';
       sep2.innerHTML = '<td colspan="5">Additional Data-Only Lines</td>';
@@ -162,21 +179,6 @@
         `;
         tbody.appendChild(tr);
       });
-
-      // Extra eSIM also as additional phone line
-      const currE = 0;
-      const nueE = extraSimRate;
-      currentTotal += currE;
-      newTotal += nueE;
-      const trE = document.createElement('tr'); trE.className='row-extra';
-      trE.innerHTML = `
-        <td>${idx++}</td>
-        <td>${extraSim.name}</td>
-        <td>${extraSim.number}</td>
-        <td>${formatCost(currE)}</td>
-        <td>${formatCost(nueE)}</td>
-      `;
-      tbody.appendChild(trE);
 
       // Totals
       const saving = currentTotal - newTotal;
