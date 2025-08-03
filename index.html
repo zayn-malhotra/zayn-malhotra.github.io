@@ -111,9 +111,10 @@
   <!-- ML Loading -->
   <section id="mlLoader">
     <p>Running Cellular Intelligence Model…</p>
-    <div id="aiLogo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+
+    <!-- AI Dots Animation (fixed to use <svg>) -->
+    <svg id="aiLogo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
       <g>
-        <!-- 8 solid dots around a circle -->
         <circle cx="60" cy="15" r="6" fill="#4285f4"/>
         <circle cx="85" cy="25" r="6" fill="#34a853"/>
         <circle cx="105" cy="60" r="6" fill="#fbbc05"/>
@@ -123,7 +124,8 @@
         <circle cx="15" cy="60" r="6" fill="#fbbc05"/>
         <circle cx="35" cy="25" r="6" fill="#ea4335"/>
       </g>
-    </div>
+    </svg>
+
     <div id="progressBar"><div id="progressFill"></div></div>
     <ul id="mlSteps"></ul>
   </section>
