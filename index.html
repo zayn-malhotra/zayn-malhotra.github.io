@@ -5,22 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Family Plan Dashboard Demo</title>
   <style>
+    /* ---------- Global ---------- */
     body { margin:0; font-family: Arial, sans-serif; background:#f1f3f4; color:#202124; }
     header, section, main { padding:16px; }
     header { background:#fff; border-bottom:1px solid #ddd; position:sticky; top:0; display:flex; align-items:center; }
     #logo { height:80px; margin-right:12px; }
     h1 { margin:0; font-size:20px; flex:1; }
 
-    /* --- AI Dots Animation --- */
-    #aiLogo { display:block; width:60px; height:60px; margin:0 auto 16px; }
-    #aiLogo g { transform-origin:50% 50%; animation:spinEase 3s ease-in-out infinite; }
-    @keyframes spinEase {
-      0%   { transform:rotate(0deg); }
-      50%  { transform:rotate(360deg); }
-      100% { transform:rotate(720deg); }
+    /* ---------- AI Loader (star + rotating dot-ring) ---------- */
+    #aiLoaderContainer {
+      position: relative;
+      width: 120px; height: 120px;
+      margin: 0 auto 16px;
+    }
+    #aiStar {
+      position: absolute;
+      width: 100%; height: 100%;
+      top: 0; left: 0;
+      object-fit: contain;
+    }
+    #aiRing {
+      position: absolute;
+      width: 100%; height: 100%;
+      top: 0; left: 0;
+      transform-origin: 50% 50%;
+      animation: ringSpin 2.5s ease-in-out infinite;
+    }
+    @keyframes ringSpin {
+      0%   { transform: rotate(0deg)   scale(1); }
+      50%  { transform: rotate(360deg) scale(1.1); }
+      100% { transform: rotate(720deg) scale(1); }
     }
 
-    /* --- ML Loader --- */
+    /* ---------- ML Loader ---------- */
     #mlLoader { display:none; text-align:center; }
     #mlLoader p { font-size:18px; margin-bottom:8px; }
     #progressBar {
@@ -34,19 +51,19 @@
     }
     @keyframes fillBar { to { width:100%; } }
 
-    /* --- Steps --- */
+    /* ---------- Step Text ---------- */
     #mlSteps { list-style:none; padding:0; margin-top:24px; }
     .step {
       opacity:0; transform:translateX(-20px);
       transition:transform .5s ease, opacity .5s ease, color .5s ease;
-      font-family:system-ui, -apple-system, sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       font-weight:600; font-size:16px; margin:12px 0; color:#202124;
     }
     .step.visible {
       opacity:1; transform:translateX(0); color:#34a853;
     }
 
-    /* --- ML Success --- */
+    /* ---------- ML Success ---------- */
     #mlSuccess { display:none; text-align:center; padding:40px; }
     #mlSuccess .checkmark { font-size:64px; color:#34a853; margin-bottom:16px; }
     #mlSuccess .successText {
@@ -55,7 +72,7 @@
     }
     @keyframes fadeZoom { to { opacity:1; transform:scale(1); } }
 
-    /* --- Dashboard Fade-In --- */
+    /* ---------- Dashboard Fade-In ---------- */
     #planSection {
       opacity:0; filter:blur(8px);
       transition:opacity .6s ease-out, filter .6s ease-out;
@@ -65,13 +82,14 @@
     }
     #planTableContainer { display:none; }
 
-    /* --- Table & Buttons --- */
+    /* ---------- Table ---------- */
     table { width:100%; border-collapse:collapse; margin-bottom:16px; }
     th, td { padding:12px 8px; text-align:left; border-bottom:1px solid #eee; }
     th { background:#f1f3f4; font-weight:bold; }
     .row-phone { background:#e8f0fe; }
     .row-extra, .row-data { background:#e8f5e9; }
     .separator-row td { background:#ddd; text-align:center; font-weight:bold; padding:8px; }
+
     .highlight { font-weight:bold; margin-top:8px; }
     .button {
       display:block; width:100%; background:#ccc; color:#666;
@@ -85,7 +103,14 @@
     }
     .button.enabled:hover { background:#e0e733; }
 
-    /* --- Purchase Success Animation --- */
+    /* ---------- Purchase/Success ---------- */
+    .spinner {
+      border:4px solid #eee; border-top:4px solid #4285f4;
+      border-radius:50%; width:32px; height:32px;
+      animation:spin 1s linear infinite; margin:0 auto 16px;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
     #successMessage {
       display:none; text-align:center; padding:16px;
       opacity:0; transform:scale(0.8);
@@ -94,49 +119,47 @@
       display:block;
       animation:fadeZoom .4s ease-out forwards;
     }
-    .spinner {
-      border:4px solid #eee; border-top:4px solid #4285f4;
-      border-radius:50%; width:32px; height:32px;
-      animation:spin 1s linear infinite; margin:0 auto 16px;
-    }
-    @keyframes spin { to { transform:rotate(360deg); } }
   </style>
 </head>
 <body>
+
+  <!-- Header -->
   <header>
     <img id="logo" src="verizayn-logo.png" alt="VeriZayn logo">
     <h1>Family Plan Dashboard</h1>
   </header>
 
-  <!-- ML Loading -->
+  <!-- 1) ML Loading -->
   <section id="mlLoader">
     <p>Running Cellular Intelligence Model…</p>
 
-    <!-- AI Dots Animation (fixed to use <svg>) -->
-    <svg id="aiLogo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
-      <g>
-        <circle cx="60" cy="15" r="6" fill="#4285f4"/>
-        <circle cx="85" cy="25" r="6" fill="#34a853"/>
-        <circle cx="105" cy="60" r="6" fill="#4285f4"/>
-        <circle cx="85" cy="95" r="6" fill="#34a853"/>
-        <circle cx="60" cy="105" r="6" fill="#4285f4"/>
-        <circle cx="35" cy="95" r="6" fill="#34a853"/>
-        <circle cx="15" cy="60" r="6" fill="#4285f4"/>
-        <circle cx="35" cy="25" r="6" fill="#34a853"/>
-      </g>
-    </svg>
+    <div id="aiLoaderContainer">
+      <img id="aiStar" src="ai-icon.png" alt="AI Logo">
+      <svg id="aiRing" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <g>
+          <circle cx="60" cy="15"  r="6" fill="#4285f4"/>
+          <circle cx="85" cy="25"  r="6" fill="#34a853"/>
+          <circle cx="105" cy="60" r="6" fill="#4285f4"/>
+          <circle cx="85" cy="95"  r="6" fill="#34a853"/>
+          <circle cx="60" cy="105" r="6" fill="#4285f4"/>
+          <circle cx="35" cy="95"  r="6" fill="#34a853"/>
+          <circle cx="15" cy="60"  r="6" fill="#4285f4"/>
+          <circle cx="35" cy="25"  r="6" fill="#34a853"/>
+        </g>
+      </svg>
+    </div>
 
     <div id="progressBar"><div id="progressFill"></div></div>
     <ul id="mlSteps"></ul>
   </section>
 
-  <!-- ML Success -->
+  <!-- 2) ML Success -->
   <section id="mlSuccess">
     <div class="checkmark">✔</div>
     <div class="successText">Found Optimal Plan!</div>
   </section>
 
-  <!-- Dashboard -->
+  <!-- 3) Dashboard -->
   <main id="planSection">
     <div id="planTableContainer">
       <h2>Device &amp; Plan Comparison</h2>
@@ -167,7 +190,7 @@
 
   <script>
     // Data & rates
-    const primaryPhones = [
+    const primaryPhones   = [
       { name: "Zayn’s iPhone", last4: "9014" },
       { name: "Mom’s iPhone",  last4: "9302" },
       { name: "Dad’s iPhone",  last4: "8643" }
@@ -183,7 +206,7 @@
 
     function formatCost(c){ return c>0?`$${c}`:'—'; }
 
-    // ML steps & timing
+    // Steps & timing
     const steps      = [
       "Analyzing personal hotspot usage",
       "Profiling device types",
@@ -191,9 +214,9 @@
       "Modeling data consumption",
       "Applying carrier discounts"
     ];
-    const stepDelay  = 1200;   // ms
-    const successHold= 1400;   // ms
-    const totalTime  = stepDelay*steps.length + successHold + 1000;
+    const stepDelay   = 1200;   // ms
+    const successHold = 1400;   // ms
+    const totalTime   = stepDelay*steps.length + successHold + 500;
 
     document.addEventListener("DOMContentLoaded", () => {
       const mlLoader    = document.getElementById("mlLoader");
@@ -202,29 +225,30 @@
       const planTable   = document.getElementById("planTableContainer");
       const ul          = document.getElementById("mlSteps");
 
-      // show loader
+      // show ML loader
       mlLoader.style.display = "block";
 
       // animate steps
-      steps.forEach((text,i) => {
+      steps.forEach((text, i) => {
         const li = document.createElement("li");
         li.className = "step";
         li.textContent = text;
         ul.appendChild(li);
-        setTimeout(() => li.classList.add("visible"), stepDelay*(i+1));
+        setTimeout(() => li.classList.add("visible"),
+                   stepDelay*(i+1));
       });
 
-      // ML success
+      // show ML success
       setTimeout(() => {
-        mlLoader.style.display = "none";
+        mlLoader.style.display  = "none";
         mlSuccess.style.display = "block";
-      }, stepDelay*steps.length + 1300);
+      }, stepDelay*steps.length + 300);
 
-      // show dashboard
+      // reveal dashboard
       setTimeout(() => {
-        mlSuccess.style.display = "none";
+        mlSuccess.style.display     = "none";
         planSection.classList.add("visible");
-        planTable.style.display = "block";
+        planTable.style.display     = "block";
         renderPlanTable();
       }, totalTime);
     });
@@ -247,7 +271,7 @@
         <tr class="separator-row"><td colspan="5">Additional Phone Lines</td></tr>`);
 
       additionalPhones.concat([extraSim]).forEach(d => {
-        const curr=0, neu=newPhoneRate;
+        const curr = 0, neu = newPhoneRate;
         newTotal += neu;
         tbody.insertAdjacentHTML("beforeend", `
           <tr class="row-extra">
@@ -260,7 +284,7 @@
         <tr class="separator-row"><td colspan="5">Additional Data Lines</td></tr>`);
 
       dataDevices.forEach(d => {
-        const curr=currentDataRate, neu=newDataRate;
+        const curr = currentDataRate, neu = newDataRate;
         newTotal += neu;
         tbody.insertAdjacentHTML("beforeend", `
           <tr class="row-data">
@@ -270,7 +294,8 @@
       });
 
       document.getElementById("totals").textContent =
-        `Current Total: $${primaryPhones.length*currentPhoneRate} • New Total: $${newTotal}`;
+        `Current Total: $${primaryPhones.length*currentPhoneRate}` +
+        ` • New Total: $${newTotal}`;
     }
 
     // Purchase flow
@@ -281,12 +306,11 @@
       purchaseBtn.classList.toggle("enabled", terms.checked);
     };
     purchaseBtn.onclick = () => {
-      document.getElementById("planTableContainer").style.display   = "none";
-      document.getElementById("purchaseLoader").style.display      = "block";
+      document.getElementById("planTableContainer").style.display = "none";
+      document.getElementById("purchaseLoader").style.display    = "block";
       setTimeout(() => {
-        document.getElementById("purchaseLoader").style.display   = "none";
-        const sm = document.getElementById("successMessage");
-        sm.classList.add("visible");
+        document.getElementById("purchaseLoader").style.display    = "none";
+        document.getElementById("successMessage").classList.add("visible");
       }, 1500);
     };
   </script>
