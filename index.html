@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en-US">
 <head>
   <meta charset="UTF-8">
@@ -210,6 +210,247 @@
       setTimeout(() => {
         document.getElementById('purchaseLoader').style.display='none';
         document.getElementById('successMessage').style.display='block';
+      }, 1500);
+    };
+  </script>
+</body>
+</html>
+ -->
+
+<!--  V2 -->
+
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Family Plan Dashboard Demo</title>
+  <style>
+    body { margin:0; font-family: Arial, sans-serif; background:#f1f3f4; color:#202124; }
+    header, section { padding:16px; }
+    header { background:#fff; border-bottom:1px solid #ddd; position:sticky; top:0; display:flex; align-items:center; z-index:10; }
+    #logo { height:100px; margin-right:12px; }
+    h1 { margin:0; font-size:20px; flex:1; }
+
+    /* ML Loader */
+    #mlLoader { display:none; text-align:center; }
+    #mlLoader ul { list-style:none; padding:0; margin-top:24px; }
+    .step { 
+      opacity:0; 
+      transform:translateX(-20px); 
+      transition:all .4s ease; 
+      font-size:16px; 
+      margin:8px 0;
+    }
+    .step.visible {
+      opacity:1; 
+      transform:translateX(0);
+    }
+    .step.check { color:green; }
+
+    /* Dashboard */
+    #planTableContainer { display:none; }
+    table { width:100%; border-collapse:collapse; margin-bottom:16px; }
+    th, td { padding:12px 8px; text-align:left; border-bottom:1px solid #eee; }
+    th { background:#f1f3f4; font-weight:bold; }
+    .row-phone { background:#e8f0fe; }
+    .row-extra, .row-data { background:#e8f5e9; }
+    .separator-row td { background:#ddd; text-align:center; font-weight:bold; padding:8px; }
+    .highlight { font-weight:bold; color:#202124; margin-top:8px; }
+    .button { display:block; width:100%; background:#ccc; color:#666; text-align:center; padding:12px; font-weight:bold; border:none; border-radius:6px; font-size:16px; margin-top:8px; cursor:not-allowed; }
+    .button.enabled { background:#f8ff3c; color:#000; cursor:pointer; transition:background .3s; }
+    .button.enabled:hover { background:#e0e733; }
+
+    /* Spinners & success */
+    .spinner { border:4px solid #eee; border-top:4px solid #4285f4; border-radius:50%; width:32px; height:32px; animation:spin 1s linear infinite; margin:0 auto 16px; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .checkmark { font-size:48px; color:green; animation:pop 0.6s ease-out; }
+    @keyframes pop { 0% { transform:scale(0); } 60% { transform:scale(1.2); } 100% { transform:scale(1); } }
+  </style>
+</head>
+<body>
+  <header>
+    <img id="logo" src="verizayn-logo.png" alt="VeriZayn logo">
+    <h1>Family Plan Dashboard</h1>
+    <div id="userStatus"></div>
+  </header>
+
+  <!-- 1) ML-Loading Screen -->
+  <section id="mlLoader">
+    <p>Running our ML model…</p>
+    <div class="spinner"></div>
+    <ul id="mlSteps"></ul>
+  </section>
+
+  <!-- 2) Actual Dashboard -->
+  <main id="planSection" style="display:none;">
+    <div id="planTableContainer">
+      <h2>Device &amp; Plan Comparison</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Device</th><th>Line</th><th>Current</th><th>New</th>
+          </tr>
+        </thead>
+        <tbody id="planTableBody"></tbody>
+      </table>
+      <div class="highlight" id="totals"></div>
+      <div>
+        <input type="checkbox" id="termsCheckbox">
+        <label for="termsCheckbox">I accept the <a href="#">Terms &amp; Conditions</a></label>
+      </div>
+      <button id="purchaseButton" class="button" disabled>Purchase New Plan</button>
+    </div>
+
+    <section id="purchaseLoader" style="display:none;">
+      <div class="spinner"></div>
+      <p>Processing your purchase...</p>
+    </section>
+
+    <section id="successMessage" style="display:none; text-align:center; padding:16px;">
+      <div class="checkmark">✔</div>
+      <p>Success! Close this page to see your new SIMs provisioned.</p>
+    </section>
+  </main>
+
+  <script>
+    // ------------ Data & rates ------------
+    const primaryPhones = [
+      { name: "Zayn’s iPhone", last4: "9014" },
+      { name: "Mom’s iPhone", last4: "9302" },
+      { name: "Dad’s iPhone", last4: "8643" }
+    ];
+    const additionalPhones = [
+      { name: "Jamie’s iPhone", last4: "" }
+    ];
+    const dataDevices = [
+      { name: "Granny’s iPad", last4: "" },
+      { name: "Extra eSIM", last4: "" }
+    ];
+    const extraSim = { name: 'Extra eSIM', last4: '' };
+    const currentPhoneRate = 35, newPhoneRate = 20;
+    const currentDataRate = 0, newDataRate = 10;
+    const extraSimRate = 20;
+
+    function formatCost(c){ return c>0?`$${c}`:'—'; }
+
+    // ------------ ML Loader Animation ------------
+    const steps = [
+      'Analyzing personal hotspot usage',
+      'Analyzing device types',
+      'Analyzing roaming requirements',
+      'Analyzing data consumption',
+      'Validating carrier discounts'
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const mlLoader = document.getElementById('mlLoader');
+      const planSection = document.getElementById('planSection');
+      const ul = document.getElementById('mlSteps');
+
+      mlLoader.style.display = 'block';
+
+      steps.forEach((text, i) => {
+        const li = document.createElement('li');
+        li.className = 'step';
+        li.textContent = text;
+        ul.appendChild(li);
+        setTimeout(() => {
+          li.classList.add('visible');
+          li.innerHTML = `<span class="checkmark">✔</span> ${text}`;
+        }, 500 * (i + 1));
+      });
+
+      // After all steps, show dashboard
+      setTimeout(() => {
+        mlLoader.style.display = 'none';
+        planSection.style.display = 'block';
+        renderPlanTable();
+      }, 500 * (steps.length + 1));
+    });
+
+    // ------------ Render Dashboard ------------
+    function renderPlanTable() {
+      const tbody = document.getElementById('planTableBody');
+      let currentTotal = 0, newTotal = 0, idx = 1;
+
+      // Primary phones
+      primaryPhones.forEach(d => {
+        const curr = currentPhoneRate, neu = newPhoneRate;
+        currentTotal += curr; newTotal += neu;
+        const tr = document.createElement('tr');
+        tr.className = 'row-phone';
+        tr.innerHTML = `
+          <td>${idx++}</td>
+          <td>${d.name}</td>
+          <td>${d.last4 || '—'}</td>
+          <td>${formatCost(curr)}</td>
+          <td>${formatCost(neu)}</td>`;
+        tbody.appendChild(tr);
+      });
+
+      // Separator: Additional Phone Lines
+      const sep1 = document.createElement('tr');
+      sep1.className = 'separator-row';
+      sep1.innerHTML = '<td colspan="5">Additional Phone Lines</td>';
+      tbody.appendChild(sep1);
+
+      // Jamie’s and Extra eSIM
+      additionalPhones.concat([extraSim]).forEach(d => {
+        const curr = 0, neu = newPhoneRate;
+        currentTotal += curr; newTotal += neu;
+        const tr = document.createElement('tr');
+        tr.className = 'row-extra';
+        tr.innerHTML = `
+          <td>${idx++}</td>
+          <td>${d.name}</td>
+          <td>${d.last4 || '—'}</td>
+          <td>${formatCost(curr)}</td>
+          <td>${formatCost(neu)}</td>`;
+        tbody.appendChild(tr);
+      });
+
+      // Separator: Data‐only lines
+      const sep2 = document.createElement('tr');
+      sep2.className = 'separator-row';
+      sep2.innerHTML = '<td colspan="5">Additional Data Lines</td>';
+      tbody.appendChild(sep2);
+
+      // Granny’s iPad + Extra eSIM as data lines
+      dataDevices.forEach(d => {
+        const curr = currentDataRate, neu = newDataRate;
+        currentTotal += curr; newTotal += neu;
+        const tr = document.createElement('tr');
+        tr.className = 'row-data';
+        tr.innerHTML = `
+          <td>${idx++}</td>
+          <td>${d.name}</td>
+          <td>${d.last4 || '—'}</td>
+          <td>${formatCost(curr)}</td>
+          <td>${formatCost(neu)}</td>`;
+        tbody.appendChild(tr);
+      });
+
+      // Totals & savings
+      const saving = currentTotal - newTotal;
+      document.getElementById('totals').textContent =
+        `Current Total: $${currentTotal} • New Total: $${newTotal}` +
+        (saving > 0 ? ` (You save $${saving}/mo!)` : '');
+    }
+
+    // ------------ Purchase Flow ------------
+    const terms = document.getElementById('termsCheckbox');
+    const purchaseBtn = document.getElementById('purchaseButton');
+    terms.onchange = () => {
+      purchaseBtn.disabled = !terms.checked;
+      purchaseBtn.classList.toggle('enabled', terms.checked);
+    };
+    purchaseBtn.onclick = () => {
+      document.getElementById('planTableContainer').style.display = 'none';
+      document.getElementById('purchaseLoader').style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('purchaseLoader').style.display = 'none';
+        document.getElementById('successMessage').style.display = 'block';
       }, 1500);
     };
   </script>
