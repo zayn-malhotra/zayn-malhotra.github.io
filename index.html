@@ -6,58 +6,57 @@
   <title>Family Plan Dashboard Demo</title>
   <style>
     body { margin:0; font-family: Arial, sans-serif; background:#f1f3f4; color:#202124; }
-    header, section { padding:16px; }
+    header, section, main { padding:16px; }
     header { background:#fff; border-bottom:1px solid #ddd; position:sticky; top:0; display:flex; align-items:center; z-index:10; }
     #logo { height:80px; margin-right:12px; }
     h1 { margin:0; font-size:20px; flex:1; }
 
-    /* ML Loader */
+    /* --- AI Rings SVG Animation --- */
+    #aiLogo {
+      display:block;
+      width:60px; height:60px;
+      margin:0 auto 16px;
+    }
+    .ring {
+      fill:none; stroke-width:4; stroke-dasharray:1,200;
+      transform-origin:50% 50%;
+    }
+    .ring1 { stroke:#4285f4; animation:dash 2s linear infinite; }
+    .ring2 { stroke:#34a853; animation:dash 2s linear infinite; animation-delay:.3s; }
+    .ring3 { stroke:#fbbc05; animation:dash 2s linear infinite; animation-delay:.6s; }
+    @keyframes dash { to { stroke-dashoffset:-200; } }
+
+    /* --- ML Loader --- */
     #mlLoader { display:none; text-align:center; }
     #mlLoader p { font-size:18px; margin-bottom:8px; }
-    #progressBar { 
-      position:relative;
-      width:80%; height:8px; background:#ddd; 
-      margin:16px auto 32px; border-radius:4px; overflow:hidden;
+    #progressBar {
+      position:relative; width:80%; height:8px; background:#ddd;
+      margin:0 auto 32px; border-radius:4px; overflow:hidden;
     }
-    #progressFill { 
-      width:0; height:100%; 
-      background:linear-gradient(270deg, #4285f4, #34a853); 
+    #progressFill {
+      width:0; height:100%;
+      background:linear-gradient(270deg, #4285f4, #34a853);
       animation:fillBar 7.7s linear forwards;
     }
     @keyframes fillBar { to { width:100%; } }
-
-    /* Animated logo */
-    #mlLogo {
-      position:absolute;
-      top:-24px; left:50%;
-      width:48px; height:48px;
-      transform:translateX(-50%);
-      animation:spinLogo 2s linear infinite;
-    }
-    @keyframes spinLogo { to { transform:translateX(-50%) rotate(360deg); } }
-
     #mlSteps { list-style:none; padding:0; margin-top:24px; }
-    .step { 
-      opacity:0; 
-      transform:translateX(-20px); 
-      transition:all .5s ease; 
-      font-size:16px; 
-      margin:12px 0;
+    .step {
+      opacity:0; transform:translateX(-20px);
+      transition:all .5s ease; font-size:16px; margin:12px 0;
     }
-    .step.visible { opacity:1; transform:translateX(0); }
-    .step.check { color:#34a853; }
+    .step.visible { opacity:1; transform:translateX(0); color:#34a853; }
 
-    /* ML Success Screen */
-    #mlSuccess {
-      display:none; text-align:center; padding:40px;
-      animation:zoomIn 0.5s ease-out forwards;
-    }
-    @keyframes zoomIn { from { transform:scale(0.6); opacity:0 } to { transform:scale(1); opacity:1 } }
+    /* --- ML Success --- */
+    #mlSuccess { display:none; text-align:center; padding:40px; }
     #mlSuccess .checkmark { font-size:64px; color:#34a853; margin-bottom:16px; }
+    #mlSuccess .successText {
+      font-size:20px; opacity:0; transform:scale(0.8);
+      animation:fadeZoom .6s ease-out forwards .3s;
+    }
+    @keyframes fadeZoom { to { opacity:1; transform:scale(1); } }
 
-    /* Dashboard */
-    #planSection { display:none; }
-    #planTableContainer { display:none; }
+    /* --- Dashboard --- */
+    #planSection, #planTableContainer { display:none; }
     table { width:100%; border-collapse:collapse; margin-bottom:16px; }
     th, td { padding:12px 8px; text-align:left; border-bottom:1px solid #eee; }
     th { background:#f1f3f4; font-weight:bold; }
@@ -65,12 +64,24 @@
     .row-extra, .row-data { background:#e8f5e9; }
     .separator-row td { background:#ddd; text-align:center; font-weight:bold; padding:8px; }
     .highlight { font-weight:bold; color:#202124; margin-top:8px; }
-    .button { display:block; width:100%; background:#ccc; color:#666; text-align:center; padding:12px; font-weight:bold; border:none; border-radius:6px; font-size:16px; margin-top:8px; cursor:not-allowed; }
-    .button.enabled { background:#f8ff3c; color:#000; cursor:pointer; transition:background .3s; }
+    .button {
+      display:block; width:100%; background:#ccc; color:#666;
+      text-align:center; padding:12px; font-weight:bold;
+      border:none; border-radius:6px; font-size:16px;
+      margin-top:8px; cursor:not-allowed;
+    }
+    .button.enabled {
+      background:#f8ff3c; color:#000; cursor:pointer;
+      transition:background .3s;
+    }
     .button.enabled:hover { background:#e0e733; }
 
-    /* Purchase flow */
-    .spinner { border:4px solid #eee; border-top:4px solid #4285f4; border-radius:50%; width:32px; height:32px; animation:spin 1s linear infinite; margin:0 auto 16px; }
+    /* --- Purchase Flow --- */
+    .spinner {
+      border:4px solid #eee; border-top:4px solid #4285f4;
+      border-radius:50%; width:32px; height:32px;
+      animation:spin 1s linear infinite; margin:0 auto 16px;
+    }
     @keyframes spin { to { transform:rotate(360deg); } }
   </style>
 </head>
@@ -84,18 +95,22 @@
   <section id="mlLoader">
     <p>Running Cellular Intelligence Model…</p>
 
-    <div id="progressBar">
-      <img id="mlLogo" src="verizayn-logo.png" alt="ML logo">
-      <div id="progressFill"></div>
-    </div>
+    <!-- AI Rings Animation -->
+    <svg id="aiLogo" viewBox="0 0 120 120">
+      <circle class="ring ring1" cx="60" cy="60" r="40"/>
+      <circle class="ring ring2" cx="60" cy="60" r="30"/>
+      <circle class="ring ring3" cx="60" cy="60" r="20"/>
+    </svg>
 
+    <!-- Progress Bar -->
+    <div id="progressBar"><div id="progressFill"></div></div>
     <ul id="mlSteps"></ul>
   </section>
 
-  <!-- 2) ML Success -->
+  <!-- 2) AI Success Screen -->
   <section id="mlSuccess">
     <div class="checkmark">✔</div>
-    <p>Model Ready!</p>
+    <div class="successText">Found Optimal Plan!</div>
   </section>
 
   <!-- 3) Dashboard -->
@@ -110,7 +125,8 @@
       </table>
       <div class="highlight" id="totals"></div>
       <div>
-        <input type="checkbox" id="termsCheckbox"><label for="termsCheckbox"> I accept the <a href="#">Terms &amp; Conditions</a></label>
+        <input type="checkbox" id="termsCheckbox">
+        <label for="termsCheckbox"> I accept the <a href="#">Terms &amp; Conditions</a></label>
       </div>
       <button id="purchaseButton" class="button" disabled>Purchase New Plan</button>
     </div>
@@ -152,45 +168,42 @@
       'Modeling data consumption',
       'Applying carrier discounts'
     ];
-    const stepDelay = 1200;   // 1.2s between each check
-    const successHold = 1400; // how long to show "Model Ready"
-    const finalDelay = stepDelay * steps.length + successHold + 500;
+    const stepDelay  = 1200;   // ms between each check
+    const successHold = 1400;  // ms to show “Found Optimal Plan!”
+    const totalTime   = stepDelay * steps.length + successHold + 500;
 
     document.addEventListener('DOMContentLoaded', () => {
-      const mlLoader   = document.getElementById('mlLoader');
-      const mlSuccess  = document.getElementById('mlSuccess');
-      const planSection= document.getElementById('planSection');
-      const planTable  = document.getElementById('planTableContainer');
-      const ul         = document.getElementById('mlSteps');
+      const mlLoader    = document.getElementById('mlLoader');
+      const mlSuccess   = document.getElementById('mlSuccess');
+      const planSection = document.getElementById('planSection');
+      const planTable   = document.getElementById('planTableContainer');
+      const ul          = document.getElementById('mlSteps');
 
-      // show ML loader
+      // 1) show ML loader
       mlLoader.style.display = 'block';
 
-      // schedule each step
+      // 2) animate steps
       steps.forEach((text, i) => {
         const li = document.createElement('li');
         li.className = 'step';
         li.textContent = text;
         ul.appendChild(li);
-
-        setTimeout(() => {
-          li.classList.add('visible','check');
-          li.innerHTML = `✔ ${text}`;
-        }, stepDelay * (i + 1));
+        setTimeout(() => li.classList.add('visible'), stepDelay * (i + 1));
       });
 
-      // after all checks + hold, transition
+      // 3) after steps, show success
       setTimeout(() => {
         mlLoader.style.display = 'none';
         mlSuccess.style.display = 'block';
-      }, stepDelay * steps.length + 500);
+      }, stepDelay * steps.length + 300);
 
+      // 4) then show dashboard
       setTimeout(() => {
         mlSuccess.style.display = 'none';
         planSection.style.display = 'block';
-        planTable.style.display = 'block';
+        planTable.style.display   = 'block';
         renderPlanTable();
-      }, finalDelay);
+      }, totalTime);
     });
 
     // --- Render dashboard table ---
@@ -202,63 +215,46 @@
       primaryPhones.forEach(d => {
         const curr = currentPhoneRate, neu = newPhoneRate;
         currentTotal += curr; newTotal += neu;
-        const tr = document.createElement('tr');
-        tr.className = 'row-phone';
-        tr.innerHTML = `
-          <td>${idx++}</td>
-          <td>${d.name}</td>
-          <td>${d.last4||'—'}</td>
-          <td>${formatCost(curr)}</td>
-          <td>${formatCost(neu)}</td>`;
-        tbody.appendChild(tr);
+        tbody.insertAdjacentHTML('beforeend', `
+          <tr class="row-phone">
+            <td>${idx++}</td><td>${d.name}</td><td>${d.last4||'—'}</td>
+            <td>${formatCost(curr)}</td><td>${formatCost(neu)}</td>
+          </tr>`);
       });
 
       // separator: additional phones
-      const sep1 = document.createElement('tr');
-      sep1.className = 'separator-row';
-      sep1.innerHTML = '<td colspan="5">Additional Phone Lines</td>';
-      tbody.appendChild(sep1);
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr class="separator-row"><td colspan="5">Additional Phone Lines</td></tr>`);
 
-      // Jamie’s & Extra eSIM
       additionalPhones.concat([extraSim]).forEach(d => {
         const curr = 0, neu = newPhoneRate;
-        currentTotal += curr; newTotal += neu;
-        const tr = document.createElement('tr');
-        tr.className = 'row-extra';
-        tr.innerHTML = `
-          <td>${idx++}</td>
-          <td>${d.name}</td>
-          <td>${d.last4||'—'}</td>
-          <td>${formatCost(curr)}</td>
-          <td>${formatCost(neu)}</td>`;
-        tbody.appendChild(tr);
+        newTotal += neu;
+        tbody.insertAdjacentHTML('beforeend', `
+          <tr class="row-extra">
+            <td>${idx++}</td><td>${d.name}</td><td>${d.last4||'—'}</td>
+            <td>${formatCost(curr)}</td><td>${formatCost(neu)}</td>
+          </tr>`);
       });
 
       // separator: data lines
-      const sep2 = document.createElement('tr');
-      sep2.className = 'separator-row';
-      sep2.innerHTML = '<td colspan="5">Additional Data Lines</td>';
-      tbody.appendChild(sep2);
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr class="separator-row"><td colspan="5">Additional Data Lines</td></tr>`);
 
-      // Granny’s iPad + Extra eSIM
       dataDevices.forEach(d => {
         const curr = currentDataRate, neu = newDataRate;
-        currentTotal += curr; newTotal += neu;
-        const tr = document.createElement('tr');
-        tr.className = 'row-data';
-        tr.innerHTML = `
-          <td>${idx++}</td>
-          <td>${d.name}</td>
-          <td>${d.last4||'—'}</td>
-          <td>${formatCost(curr)}</td>
-          <td>${formatCost(neu)}</td>`;
-        tbody.appendChild(tr);
+        newTotal += neu;
+        tbody.insertAdjacentHTML('beforeend', `
+          <tr class="row-data">
+            <td>${idx++}</td><td>${d.name}</td><td>${d.last4||'—'}</td>
+            <td>${formatCost(curr)}</td><td>${formatCost(neu)}</td>
+          </tr>`);
       });
 
-      // totals
-      const saving = currentTotal - newTotal;
+      // totals & savings
+      const saving = (currentPhoneRate * primaryPhones.length + newPhoneRate * (primaryPhones.length + additionalPhones.length + 1) + newDataRate * dataDevices.length) - newTotal;
       document.getElementById('totals').textContent =
-        `Current Total: $${currentTotal} • New Total: $${newTotal}` +
+        `Current Total: $${primaryPhones.length * currentPhoneRate}` +
+        ` • New Total: $${newTotal}` +
         (saving > 0 ? ` (You save $${saving}/mo!)` : '');
     }
 
@@ -273,8 +269,8 @@
       document.getElementById('planTableContainer').style.display = 'none';
       document.getElementById('purchaseLoader').style.display     = 'block';
       setTimeout(() => {
-        document.getElementById('purchaseLoader').style.display = 'none';
-        document.getElementById('successMessage').style.display = 'block';
+        document.getElementById('purchaseLoader').style.display     = 'none';
+        document.getElementById('successMessage').style.display     = 'block';
       }, 1500);
     };
   </script>
