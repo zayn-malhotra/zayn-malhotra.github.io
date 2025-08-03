@@ -1,224 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en-US">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Family Plan Dashboard Demo</title>
-  <style>
-    /* Responsive & vibrant styling */
-    body { margin:0; font-family: Arial, sans-serif; background:#f1f3f4; color:#202124; }
-    header, section { padding:16px; }
-    header { background:#fff; border-bottom:1px solid #ddd; position:sticky; top:0; display:flex; align-items:center; z-index:10; }
-    #logo { height:100px; margin-right:12px; }
-    h1 { margin:0; font-size:20px; flex:1; }
-    table { width:100%; border-collapse:collapse; margin-bottom:16px; }
-    th, td { padding:12px 8px; text-align:left; border-bottom:1px solid #eee; }
-    th { background:#f1f3f4; font-weight:bold; }
-    .row-phone { background:#e8f0fe; }
-    .row-extra, .row-data { background:#e8f5e9; }
-    .separator-row td { background:#ddd; text-align:center; font-weight:bold; padding:8px; }
-    .highlight { font-weight:bold; color:#202124; margin-top:8px; }
-    .button { display:block; width:100%; background:#ccc; color:#666; text-align:center; padding:12px; font-weight:bold; border:none; border-radius:6px; font-size:16px; margin-top:8px; cursor:not-allowed; }
-    .button.enabled { background:#f8ff3c; color:#000; cursor:pointer; transition:background .3s; }
-    .button.enabled:hover { background:#e0e733; }
-    #loader, #purchaseLoader { text-align:center; padding:32px; background:#fff; border:1px solid #ddd; border-radius:6px; margin-bottom:16px; }
-    .spinner { border:4px solid #eee; border-top:4px solid #4285f4; border-radius:50%; width:32px; height:32px; animation:spin 1s linear infinite; margin:0 auto 16px; }
-    @keyframes spin { to { transform:rotate(360deg); } }
-    .checkmark { font-size:48px; color:green; animation:pop 0.6s ease-out; }
-    @keyframes pop { 0% { transform:scale(0); } 60% { transform:scale(1.2); } 100% { transform:scale(1); } }
-  </style>
-</head>
-<body>
-  <header>
-    <img id="logo" src="verizayn-logo.png" alt="VeriZayn logo">
-    <h1>Family Plan Dashboard</h1>
-    <div id="userStatus"></div>
-  </header>
-  <main>
-    <section id="planSection">
-      <div id="loader">
-        <div class="spinner"></div>
-        <p>Computing your optimal family plan...</p>
-      </div>
-      <div id="planTableContainer" style="display:none;">
-        <h2>Device &amp; Plan Comparison</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>#</th><th>Device</th><th>Current SIM</th><th>Current Cost</th><th>New Plan Cost</th>
-            </tr>
-          </thead>
-          <tbody id="planTableBody"></tbody>
-        </table>
-        <div class="highlight" id="totals"></div>
-        <div>
-          <input type="checkbox" id="termsCheckbox">
-          <label for="termsCheckbox">I accept the <a href="#">Terms &amp; Conditions</a></label>
-        </div>
-        <button id="purchaseButton" class="button" disabled>Purchase New Plan</button>
-      </div>
-    </section>
-
-    <section id="purchaseLoader" style="display:none;">
-      <div class="spinner"></div>
-      <p>Processing your purchase...</p>
-    </section>
-
-    <section id="successMessage" style="display:none; text-align:center; padding:16px;">
-      <div class="checkmark">✔</div>
-      <p>Success! Close this page to see your new SIMs provisioned.</p>
-    </section>
-  </main>
-  <script>
-    // Data
-    const primaryPhones = [
-      { name: "Zayn's iPhone 12 Pro", number: "408-769-9014" },
-      { name: "Sarah’s iPhone 12 Pro", number: "713-684-9302" },
-      { name: "Coco’s iPhone 16 Pro Max", number: "669-298-8643" }
-    ];
-    const additionalPhones = [
-      { name: "Jamie’s iPhone 14Pro", number: "" }
-    ];
-    const dataDevices = [
-      { name: "Granny’s iPad Pro", number: "" },
-      { name: "Zayn’s Apple Watch 10", number: "" }
-    ];
-    const extraSim = { name: 'Extra eSIM', number:'—' };
-
-    // Pricing
-    const currentPhoneRate = 35;
-    const currentDataRate = 0;
-    const newPhoneRate = 20;
-    const newDataRate = 10;
-    const extraSimRate = 20;
-
-    function formatCost(cost) {
-      return cost > 0 ? `$${cost}` : '—';
-    }
-
-    function renderPlanTable() {
-      const tbody = document.getElementById('planTableBody');
-      let currentTotal = 0, newTotal = 0;
-      let idx = 1;
-
-      // Primary phone lines
-      primaryPhones.forEach(d => {
-        const curr = currentPhoneRate;
-        const nue = newPhoneRate;
-        currentTotal += curr;
-        newTotal += nue;
-        const tr = document.createElement('tr'); tr.className='row-phone';
-        tr.innerHTML = `
-          <td>${idx++}</td>
-          <td>${d.name}</td>
-          <td>${d.number||'—'}</td>
-          <td>${formatCost(curr)}</td>
-          <td>${formatCost(nue)}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      // Separator for additional phone lines
-      const sep1 = document.createElement('tr'); sep1.className='separator-row';
-      sep1.innerHTML = '<td colspan="5">Additional Phone Lines</td>';
-      tbody.appendChild(sep1);
-
-      // Additional phones (no current SIM)
-      additionalPhones.forEach(d => {
-        const curr = 0;
-        const nue = newPhoneRate;
-        currentTotal += curr;
-        newTotal += nue;
-        const tr = document.createElement('tr'); tr.className='row-extra';
-        tr.innerHTML = `
-          <td>${idx++}</td>
-          <td>${d.name}</td>
-          <td>—</td>
-          <td>${formatCost(curr)}</td>
-          <td>${formatCost(nue)}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      // Extra eSIM also as additional phone line
-      {
-        const currE = 0;
-        const nueE = extraSimRate;
-        currentTotal += currE;
-        newTotal += nueE;
-        const trE = document.createElement('tr'); trE.className='row-extra';
-        trE.innerHTML = `
-          <td>${idx++}</td>
-          <td>${extraSim.name}</td>
-          <td>${extraSim.number}</td>
-          <td>${formatCost(currE)}</td>
-          <td>${formatCost(nueE)}</td>
-        `;
-        tbody.appendChild(trE);
-      }
-
-      // Separator for data-only lines
-      const sep2 = document.createElement('tr'); sep2.className='separator-row';
-      sep2.innerHTML = '<td colspan="5">Additional Data-Only Lines</td>';
-      tbody.appendChild(sep2);
-
-      // Data devices
-      dataDevices.forEach(d => {
-        const curr = currentDataRate;
-        const nue = newDataRate;
-        currentTotal += curr;
-        newTotal += nue;
-        const tr = document.createElement('tr'); tr.className='row-data';
-        tr.innerHTML = `
-          <td>${idx++}</td>
-          <td>${d.name}</td>
-          <td>—</td>
-          <td>${formatCost(curr)}</td>
-          <td>${formatCost(nue)}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      // Totals
-      const saving = currentTotal - newTotal;
-      document.getElementById('totals').textContent =
-        `Current Total: $${currentTotal} • New Total: $${newTotal} ${saving>0?`(You save $${saving}/mo!)`:''}`;
-    }
-
-    // Init
-    setTimeout(() => {
-      document.getElementById('loader').style.display='none';
-      document.getElementById('planTableContainer').style.display='block';
-      renderPlanTable();
-    }, 1500);
-
-    // Purchase flow
-    const terms = document.getElementById('termsCheckbox');
-    const purchaseBtn = document.getElementById('purchaseButton');
-    terms.onchange = () => {
-      if (terms.checked) {
-        purchaseBtn.disabled = false;
-        purchaseBtn.classList.add('enabled');
-      } else {
-        purchaseBtn.disabled = true;
-        purchaseBtn.classList.remove('enabled');
-      }
-    };
-    purchaseBtn.onclick = () => {
-      document.getElementById('planSection').style.display='none';
-      document.getElementById('purchaseLoader').style.display='block';
-      setTimeout(() => {
-        document.getElementById('purchaseLoader').style.display='none';
-        document.getElementById('successMessage').style.display='block';
-      }, 1500);
-    };
-  </script>
-</body>
-</html>
- -->
-
-<!--  V2 -->
-
 <!DOCTYPE html>
 <html lang="en-US">
 <head>
@@ -234,10 +13,28 @@
 
     /* ML Loader */
     #mlLoader { display:none; text-align:center; }
-    #mlLoader p { font-size:18px; }
-    #progressBar { width:80%; height:8px; background:#ddd; margin:16px auto; border-radius:4px; overflow:hidden; }
-    #progressFill { width:0; height:100%; background:linear-gradient(270deg, #4285f4, #34a853); animation:fillBar 7s linear forwards; }
+    #mlLoader p { font-size:18px; margin-bottom:8px; }
+    #progressBar { 
+      position:relative;
+      width:80%; height:8px; background:#ddd; 
+      margin:16px auto 32px; border-radius:4px; overflow:hidden;
+    }
+    #progressFill { 
+      width:0; height:100%; 
+      background:linear-gradient(270deg, #4285f4, #34a853); 
+      animation:fillBar 7.7s linear forwards;
+    }
     @keyframes fillBar { to { width:100%; } }
+
+    /* Animated logo */
+    #mlLogo {
+      position:absolute;
+      top:-24px; left:50%;
+      width:48px; height:48px;
+      transform:translateX(-50%);
+      animation:spinLogo 2s linear infinite;
+    }
+    @keyframes spinLogo { to { transform:translateX(-50%) rotate(360deg); } }
 
     #mlSteps { list-style:none; padding:0; margin-top:24px; }
     .step { 
@@ -247,11 +44,16 @@
       font-size:16px; 
       margin:12px 0;
     }
-    .step.visible {
-      opacity:1; 
-      transform:translateX(0);
-    }
+    .step.visible { opacity:1; transform:translateX(0); }
     .step.check { color:#34a853; }
+
+    /* ML Success Screen */
+    #mlSuccess {
+      display:none; text-align:center; padding:40px;
+      animation:zoomIn 0.5s ease-out forwards;
+    }
+    @keyframes zoomIn { from { transform:scale(0.6); opacity:0 } to { transform:scale(1); opacity:1 } }
+    #mlSuccess .checkmark { font-size:64px; color:#34a853; margin-bottom:16px; }
 
     /* Dashboard */
     #planSection { display:none; }
@@ -270,8 +72,6 @@
     /* Purchase flow */
     .spinner { border:4px solid #eee; border-top:4px solid #4285f4; border-radius:50%; width:32px; height:32px; animation:spin 1s linear infinite; margin:0 auto 16px; }
     @keyframes spin { to { transform:rotate(360deg); } }
-    .checkmark { font-size:48px; color:green; animation:pop 0.6s ease-out; }
-    @keyframes pop { 0% { transform:scale(0); } 60% { transform:scale(1.2); } 100% { transform:scale(1); } }
   </style>
 </head>
 <body>
@@ -282,12 +82,23 @@
 
   <!-- 1) ML-Loading Screen -->
   <section id="mlLoader">
-    <p>Powering our AI-driven recommendation…</p>
-    <div id="progressBar"><div id="progressFill"></div></div>
+    <p>Running Cellular Intelligence Model…</p>
+
+    <div id="progressBar">
+      <img id="mlLogo" src="verizayn-logo.png" alt="ML logo">
+      <div id="progressFill"></div>
+    </div>
+
     <ul id="mlSteps"></ul>
   </section>
 
-  <!-- 2) Dashboard -->
+  <!-- 2) ML Success -->
+  <section id="mlSuccess">
+    <div class="checkmark">✔</div>
+    <p>Model Ready!</p>
+  </section>
+
+  <!-- 3) Dashboard -->
   <main id="planSection">
     <div id="planTableContainer">
       <h2>Device &amp; Plan Comparison</h2>
@@ -342,13 +153,15 @@
       'Applying carrier discounts'
     ];
     const stepDelay = 1200;   // 1.2s between each check
-    const finalDelay = stepDelay * (steps.length + 1) + 500;
+    const successHold = 1400; // how long to show "Model Ready"
+    const finalDelay = stepDelay * steps.length + successHold + 500;
 
     document.addEventListener('DOMContentLoaded', () => {
-      const mlLoader = document.getElementById('mlLoader');
-      const planSection = document.getElementById('planSection');
-      const planTable = document.getElementById('planTableContainer');
-      const ul = document.getElementById('mlSteps');
+      const mlLoader   = document.getElementById('mlLoader');
+      const mlSuccess  = document.getElementById('mlSuccess');
+      const planSection= document.getElementById('planSection');
+      const planTable  = document.getElementById('planTableContainer');
+      const ul         = document.getElementById('mlSteps');
 
       // show ML loader
       mlLoader.style.display = 'block';
@@ -361,14 +174,19 @@
         ul.appendChild(li);
 
         setTimeout(() => {
-          li.classList.add('visible', 'check');
+          li.classList.add('visible','check');
           li.innerHTML = `✔ ${text}`;
         }, stepDelay * (i + 1));
       });
 
-      // after all steps finish, reveal dashboard
+      // after all checks + hold, transition
       setTimeout(() => {
         mlLoader.style.display = 'none';
+        mlSuccess.style.display = 'block';
+      }, stepDelay * steps.length + 500);
+
+      setTimeout(() => {
+        mlSuccess.style.display = 'none';
         planSection.style.display = 'block';
         planTable.style.display = 'block';
         renderPlanTable();
@@ -453,7 +271,7 @@
     };
     purchaseBtn.onclick = () => {
       document.getElementById('planTableContainer').style.display = 'none';
-      document.getElementById('purchaseLoader').style.display = 'block';
+      document.getElementById('purchaseLoader').style.display     = 'block';
       setTimeout(() => {
         document.getElementById('purchaseLoader').style.display = 'none';
         document.getElementById('successMessage').style.display = 'block';
