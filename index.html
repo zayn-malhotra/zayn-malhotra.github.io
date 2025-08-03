@@ -11,23 +11,13 @@
     #logo { height:80px; margin-right:12px; }
     h1 { margin:0; font-size:20px; flex:1; }
 
-    /* --- AI Rings SVG Animation --- */
-    #aiLogo {
-      display:block; width:60px; height:60px;
-      margin:0 auto 16px;
-    }
-    .ring {
-      fill:none; stroke-width:4;
-      /* bigger dashes */
-      stroke-dasharray:12,20;
-      transform-origin:50% 50%;
-      /* cycle between blue & green */
-      animation:dash 2s linear infinite, colorChange 4s ease-in-out infinite;
-    }
-    @keyframes dash { to { stroke-dashoffset:-200; } }
-    @keyframes colorChange {
-      0%,100% { stroke:#4285f4; }
-      50%     { stroke:#34a853; }
+    /* --- AI Dots Animation --- */
+    #aiLogo { display:block; width:60px; height:60px; margin:0 auto 16px; }
+    #aiLogo g { transform-origin:50% 50%; animation:spinEase 3s ease-in-out infinite; }
+    @keyframes spinEase {
+      0%   { transform:rotate(0deg); }
+      50%  { transform:rotate(360deg); }
+      100% { transform:rotate(720deg); }
     }
 
     /* --- ML Loader --- */
@@ -44,14 +34,16 @@
     }
     @keyframes fillBar { to { width:100%; } }
 
+    /* --- Steps --- */
     #mlSteps { list-style:none; padding:0; margin-top:24px; }
     .step {
       opacity:0; transform:translateX(-20px);
-      transition:all .5s ease; font-size:16px; margin:12px 0;
+      transition:transform .5s ease, opacity .5s ease, color .5s ease;
+      font-family:system-ui, -apple-system, sans-serif;
+      font-weight:600; font-size:16px; margin:12px 0; color:#202124;
     }
-    /* black text once visible */
     .step.visible {
-      opacity:1; transform:translateX(0); color:#202124;
+      opacity:1; transform:translateX(0); color:#34a853;
     }
 
     /* --- ML Success --- */
@@ -63,25 +55,24 @@
     }
     @keyframes fadeZoom { to { opacity:1; transform:scale(1); } }
 
-    /* --- Dashboard (initially invisible+blurred) --- */
+    /* --- Dashboard Fade-In --- */
     #planSection {
       opacity:0; filter:blur(8px);
       transition:opacity .6s ease-out, filter .6s ease-out;
     }
-    /* when JS adds this class, it fades in & sharpens */
     #planSection.visible {
       opacity:1; filter:blur(0);
     }
     #planTableContainer { display:none; }
 
+    /* --- Table & Buttons --- */
     table { width:100%; border-collapse:collapse; margin-bottom:16px; }
     th, td { padding:12px 8px; text-align:left; border-bottom:1px solid #eee; }
     th { background:#f1f3f4; font-weight:bold; }
     .row-phone { background:#e8f0fe; }
     .row-extra, .row-data { background:#e8f5e9; }
     .separator-row td { background:#ddd; text-align:center; font-weight:bold; padding:8px; }
-
-    .highlight { font-weight:bold; color:#202124; margin-top:8px; }
+    .highlight { font-weight:bold; margin-top:8px; }
     .button {
       display:block; width:100%; background:#ccc; color:#666;
       text-align:center; padding:12px; font-weight:bold;
@@ -94,14 +85,21 @@
     }
     .button.enabled:hover { background:#e0e733; }
 
-    /* --- Purchase Flow Spinner --- */
+    /* --- Purchase Success Animation --- */
+    #successMessage {
+      display:none; text-align:center; padding:16px;
+      opacity:0; transform:scale(0.8);
+    }
+    #successMessage.visible {
+      display:block;
+      animation:fadeZoom .4s ease-out forwards;
+    }
     .spinner {
       border:4px solid #eee; border-top:4px solid #4285f4;
       border-radius:50%; width:32px; height:32px;
       animation:spin 1s linear infinite; margin:0 auto 16px;
     }
     @keyframes spin { to { transform:rotate(360deg); } }
-
   </style>
 </head>
 <body>
@@ -110,29 +108,33 @@
     <h1>Family Plan Dashboard</h1>
   </header>
 
-  <!-- 1) ML-Loading Screen -->
+  <!-- ML Loading -->
   <section id="mlLoader">
     <p>Running Cellular Intelligence Model…</p>
-
-    <!-- AI Rings Animation -->
-    <svg id="aiLogo" viewBox="0 0 120 120">
-      <circle class="ring" cx="60" cy="60" r="40"/>
-      <circle class="ring" cx="60" cy="60" r="30"/>
-      <circle class="ring" cx="60" cy="60" r="20"/>
-    </svg>
-
-    <!-- Progress Bar -->
+    <div id="aiLogo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+      <g>
+        <!-- 8 solid dots around a circle -->
+        <circle cx="60" cy="15" r="6" fill="#4285f4"/>
+        <circle cx="85" cy="25" r="6" fill="#34a853"/>
+        <circle cx="105" cy="60" r="6" fill="#fbbc05"/>
+        <circle cx="85" cy="95" r="6" fill="#ea4335"/>
+        <circle cx="60" cy="105" r="6" fill="#4285f4"/>
+        <circle cx="35" cy="95" r="6" fill="#34a853"/>
+        <circle cx="15" cy="60" r="6" fill="#fbbc05"/>
+        <circle cx="35" cy="25" r="6" fill="#ea4335"/>
+      </g>
+    </div>
     <div id="progressBar"><div id="progressFill"></div></div>
     <ul id="mlSteps"></ul>
   </section>
 
-  <!-- 2) AI Success Screen -->
+  <!-- ML Success -->
   <section id="mlSuccess">
     <div class="checkmark">✔</div>
     <div class="successText">Found Optimal Plan!</div>
   </section>
 
-  <!-- 3) Dashboard -->
+  <!-- Dashboard -->
   <main id="planSection">
     <div id="planTableContainer">
       <h2>Device &amp; Plan Comparison</h2>
@@ -155,131 +157,134 @@
       <p>Processing your purchase...</p>
     </section>
 
-    <section id="successMessage" style="display:none; text-align:center; padding:16px;">
+    <section id="successMessage">
       <div class="checkmark">✔</div>
       <p>Success! Close this page to see your new SIMs provisioned.</p>
     </section>
   </main>
 
   <script>
-    // --- Data & rates ---
+    // Data & rates
     const primaryPhones = [
       { name: "Zayn’s iPhone", last4: "9014" },
-      { name: "Mom’s iPhone", last4: "9302" },
-      { name: "Dad’s iPhone", last4: "8643" }
+      { name: "Mom’s iPhone",  last4: "9302" },
+      { name: "Dad’s iPhone",  last4: "8643" }
     ];
     const additionalPhones = [{ name: "Jamie’s iPhone", last4: "" }];
-    const dataDevices = [
+    const dataDevices     = [
       { name: "Granny’s iPad", last4: "" },
-      { name: "Extra eSIM", last4: "" }
+      { name: "Extra eSIM",    last4: "" }
     ];
-    const extraSim = { name: 'Extra eSIM', last4: '' };
-    const currentPhoneRate = 35, newPhoneRate = 20;
-    const currentDataRate = 0, newDataRate = 10;
+    const extraSim        = { name: "Extra eSIM", last4: "" };
+    const currentPhoneRate= 35, newPhoneRate = 20;
+    const currentDataRate = 0,  newDataRate  = 10;
 
-    function formatCost(c) { return c > 0 ? `$${c}` : '—'; }
+    function formatCost(c){ return c>0?`$${c}`:'—'; }
 
-    // --- ML steps & timing ---
-    const steps = [
-      'Analyzing personal hotspot usage',
-      'Profiling device types',
-      'Checking roaming requirements',
-      'Modeling data consumption',
-      'Applying carrier discounts'
+    // ML steps & timing
+    const steps      = [
+      "Analyzing personal hotspot usage",
+      "Profiling device types",
+      "Checking roaming requirements",
+      "Modeling data consumption",
+      "Applying carrier discounts"
     ];
     const stepDelay  = 1200;   // ms
     const successHold= 1400;   // ms
-    const totalTime  = stepDelay * steps.length + successHold + 500;
+    const totalTime  = stepDelay*steps.length + successHold + 500;
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const mlLoader    = document.getElementById('mlLoader');
-      const mlSuccess   = document.getElementById('mlSuccess');
-      const planSection = document.getElementById('planSection');
-      const planTable   = document.getElementById('planTableContainer');
-      const ul          = document.getElementById('mlSteps');
+    document.addEventListener("DOMContentLoaded", () => {
+      const mlLoader    = document.getElementById("mlLoader");
+      const mlSuccess   = document.getElementById("mlSuccess");
+      const planSection = document.getElementById("planSection");
+      const planTable   = document.getElementById("planTableContainer");
+      const ul          = document.getElementById("mlSteps");
 
-      mlLoader.style.display = 'block';
+      // show loader
+      mlLoader.style.display = "block";
 
-      steps.forEach((text, i) => {
-        const li = document.createElement('li');
-        li.className = 'step';
+      // animate steps
+      steps.forEach((text,i) => {
+        const li = document.createElement("li");
+        li.className = "step";
         li.textContent = text;
         ul.appendChild(li);
-        setTimeout(() => li.classList.add('visible'), stepDelay * (i + 1));
+        setTimeout(() => li.classList.add("visible"), stepDelay*(i+1));
       });
 
+      // ML success
       setTimeout(() => {
-        mlLoader.style.display = 'none';
-        mlSuccess.style.display= 'block';
-      }, stepDelay * steps.length + 300);
+        mlLoader.style.display = "none";
+        mlSuccess.style.display = "block";
+      }, stepDelay*steps.length + 300);
 
+      // show dashboard
       setTimeout(() => {
-        mlSuccess.style.display   = 'none';
-        planSection.classList.add('visible');
-        planTable.style.display   = 'block';
+        mlSuccess.style.display = "none";
+        planSection.classList.add("visible");
+        planTable.style.display = "block";
         renderPlanTable();
       }, totalTime);
     });
 
-    // --- Render dashboard table ---
     function renderPlanTable() {
-      const tbody = document.getElementById('planTableBody');
+      const tbody = document.getElementById("planTableBody");
       let currentTotal = 0, newTotal = 0, idx = 1;
 
       primaryPhones.forEach(d => {
         const curr = currentPhoneRate, neu = newPhoneRate;
         currentTotal += curr; newTotal += neu;
-        tbody.insertAdjacentHTML('beforeend', `
+        tbody.insertAdjacentHTML("beforeend", `
           <tr class="row-phone">
-            <td>${idx++}</td><td>${d.name}</td><td>${d.last4||'—'}</td>
+            <td>${idx++}</td><td>${d.name}</td><td>${d.last4||"—"}</td>
             <td>${formatCost(curr)}</td><td>${formatCost(neu)}</td>
           </tr>`);
       });
 
-      tbody.insertAdjacentHTML('beforeend', `<tr class="separator-row"><td colspan="5">Additional Phone Lines</td></tr>`);
+      tbody.insertAdjacentHTML("beforeend", `
+        <tr class="separator-row"><td colspan="5">Additional Phone Lines</td></tr>`);
 
       additionalPhones.concat([extraSim]).forEach(d => {
-        const curr = 0, neu = newPhoneRate;
+        const curr=0, neu=newPhoneRate;
         newTotal += neu;
-        tbody.insertAdjacentHTML('beforeend', `
+        tbody.insertAdjacentHTML("beforeend", `
           <tr class="row-extra">
-            <td>${idx++}</td><td>${d.name}</td><td>${d.last4||'—'}</td>
+            <td>${idx++}</td><td>${d.name}</td><td>${d.last4||"—"}</td>
             <td>${formatCost(curr)}</td><td>${formatCost(neu)}</td>
           </tr>`);
       });
 
-      tbody.insertAdjacentHTML('beforeend', `<tr class="separator-row"><td colspan="5">Additional Data Lines</td></tr>`);
+      tbody.insertAdjacentHTML("beforeend", `
+        <tr class="separator-row"><td colspan="5">Additional Data Lines</td></tr>`);
 
       dataDevices.forEach(d => {
-        const curr = currentDataRate, neu = newDataRate;
+        const curr=currentDataRate, neu=newDataRate;
         newTotal += neu;
-        tbody.insertAdjacentHTML('beforeend', `
+        tbody.insertAdjacentHTML("beforeend", `
           <tr class="row-data">
-            <td>${idx++}</td><td>${d.name}</td><td>${d.last4||'—'}</td>
+            <td>${idx++}</td><td>${d.name}</td><td>${d.last4||"—"}</td>
             <td>${formatCost(curr)}</td><td>${formatCost(neu)}</td>
           </tr>`);
       });
 
-      const saving = (currentPhoneRate * primaryPhones.length + newPhoneRate * (primaryPhones.length + additionalPhones.length + 1) + newDataRate * dataDevices.length) - newTotal;
-      document.getElementById('totals').textContent =
-        `Current Total: $${primaryPhones.length * currentPhoneRate}` +
-        ` • New Total: $${newTotal}` +
-        (saving > 0 ? ` (You save $${saving}/mo!)` : '');
+      document.getElementById("totals").textContent =
+        `Current Total: $${primaryPhones.length*currentPhoneRate} • New Total: $${newTotal}`;
     }
 
-    // --- Purchase flow ---
-    const terms = document.getElementById('termsCheckbox');
-    const purchaseBtn = document.getElementById('purchaseButton');
+    // Purchase flow
+    const terms      = document.getElementById("termsCheckbox");
+    const purchaseBtn= document.getElementById("purchaseButton");
     terms.onchange = () => {
       purchaseBtn.disabled = !terms.checked;
-      purchaseBtn.classList.toggle('enabled', terms.checked);
+      purchaseBtn.classList.toggle("enabled", terms.checked);
     };
     purchaseBtn.onclick = () => {
-      document.getElementById('planTableContainer').style.display = 'none';
-      document.getElementById('purchaseLoader').style.display     = 'block';
+      document.getElementById("planTableContainer").style.display   = "none";
+      document.getElementById("purchaseLoader").style.display      = "block";
       setTimeout(() => {
-        document.getElementById('purchaseLoader').style.display = 'none';
-        document.getElementById('successMessage').style.display = 'block';
+        document.getElementById("purchaseLoader").style.display   = "none";
+        const sm = document.getElementById("successMessage");
+        sm.classList.add("visible");
       }, 1500);
     };
   </script>
