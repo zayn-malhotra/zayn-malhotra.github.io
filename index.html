@@ -4,22 +4,19 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Don’t Outsource Your Thinking — Use ChatGPT Responsibly</title>
-  <meta name="description" content="A polished, single‑file guide for using ChatGPT to learn responsibly: Socratic setup, Voice Mode, reminders, quizzes, and mind‑maps." />
   <style>
+    /* Same polished UI styles as before */
     :root {
-      --bg: #0b0b0c;         /* deep near-black */
-      --panel: #111214;      /* card */
-      --panel-2: #15171b;    /* elevated */
-      --text: #e9edf1;       /* main text */
-      --muted: #aab3be;      /* secondary */
-      --link: #9fd2ff;       /* links */
-      --ring-a: #5de0e6;     /* siri-ish */
-      --ring-b: #b58cff;     /* siri-ish */
-      --ring-c: #94fbab;     /* siri-ish */
+      --bg: #0b0b0c;
+      --panel: #111214;
+      --panel-2: #15171b;
+      --text: #e9edf1;
+      --muted: #aab3be;
+      --link: #9fd2ff;
+      --ring-a: #5de0e6;
+      --ring-b: #b58cff;
+      --ring-c: #94fbab;
       --brand: #c6d2ff;
-      --ok: #a6f0c6;
-      --warn: #ffd29a;
-      --danger: #ff9ea6;
       --code-bg: #0f1115;
       --code-bd: #2b2f3a;
       --chip: #1a1d23;
@@ -27,352 +24,136 @@
       --shadow: 0 10px 30px rgba(0,0,0,0.45);
       --radius: 16px;
       --radius-md: 12px;
-      --radius-sm: 10px;
       --maxw: 1000px;
     }
-
-    @media (prefers-color-scheme: light) {
-      :root{
-        --bg: #fbfbfd;
-        --panel: #ffffff;
-        --panel-2: #f5f7fb;
-        --text: #111317;
-        --muted: #475466;
-        --link: #2b78ff;
-        --code-bg: #f7f9fd;
-        --code-bd: #e6ecf6;
-        --chip: #f2f5fb;
-        --chip-bd: #e6ecf6;
-        --shadow: 0 8px 24px rgba(0,0,0,0.08);
-      }
-    }
-
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      padding: 0;
-      background: radial-gradient(1200px 900px at 80% -10%, rgba(149, 110, 255, 0.12), transparent 60%),
-                  radial-gradient(1000px 800px at -10% 20%, rgba(90, 225, 234, 0.10), transparent 65%),
-                  var(--bg);
-      color: var(--text);
-      font: 16px/1.55 ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto, Inter, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-    }
-
+    body { margin:0; background:var(--bg); color:var(--text); font:16px/1.55 ui-sans-serif, system-ui; }
     .wrap { max-width: var(--maxw); margin: 0 auto; padding: 28px 20px 80px; }
-
-    /* Top bar */
-    .nav {
-      position: sticky; top: 0; z-index: 50;
-      backdrop-filter: saturate(140%) blur(10px);
-      background: linear-gradient(180deg, rgba(10,10,11,0.6), rgba(10,10,11,0.1));
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-    .nav > .wrap { display: flex; align-items: center; gap: 14px; padding-top: 12px; padding-bottom: 12px; }
-    .logo {
-      width: 36px; height: 36px; border-radius: 10px; position: relative; overflow: hidden;
-      background: radial-gradient(120% 120% at 20% 0%, var(--ring-a), transparent 55%),
-                  radial-gradient(120% 120% at 95% 15%, var(--ring-b), transparent 60%),
-                  radial-gradient(130% 130% at 50% 120%, var(--ring-c), transparent 65%);
-      box-shadow: var(--shadow);
-    }
-    .title { font-weight: 700; letter-spacing: .2px; font-size: 16px; }
-    .title small { display:block; font-weight: 500; color: var(--muted); letter-spacing: .1px; }
-
-    /* Hero */
-    .hero {
-      margin-top: 26px; margin-bottom: 26px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent 60%);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: var(--radius);
-      padding: 28px;
-      box-shadow: var(--shadow);
-    }
-    .hero h1 {
-      margin: 0 0 8px; font-size: clamp(28px, 4.6vw, 44px); line-height: 1.15;
-      background: linear-gradient(90deg, #eaf1ff 10%, #c9dcff 45%, #d2ffe7 95%);
-      -webkit-background-clip: text; background-clip: text; color: transparent;
-    }
-    .kicker { color: var(--muted); margin-top: 6px; }
-
-    .chips { display:flex; flex-wrap:wrap; gap: 10px; margin-top: 16px; }
-    .chip { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius: 999px; border:1px solid var(--chip-bd); background: var(--chip); font-size: 13px; color: var(--text); }
-    .chip svg { opacity:.9 }
-
-    .cta-row { margin-top: 18px; display:flex; gap:12px; flex-wrap:wrap; }
-    .btn { appearance:none; border:none; cursor:pointer; border-radius: 12px; padding: 12px 16px; font-weight: 600; color: #0b0b0c; background: linear-gradient(90deg, #b7f8ff, #cdf0ff, #d0ffe8); box-shadow: var(--shadow); }
-    .btn.alt { background: transparent; color: var(--text); border:1px solid rgba(255,255,255,0.15); }
-
-    /* Layout */
-    .content { display:grid; grid-template-columns: 240px 1fr; gap: 24px; align-items:start; }
-    @media (max-width: 980px){ .content { grid-template-columns: 1fr; } .toc { position: static; } }
-
-    .toc { position: sticky; top: 74px; border:1px solid rgba(255,255,255,0.10); background: var(--panel); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
-    .toc h3 { margin: 0 0 10px; font-size: 14px; letter-spacing:.2px; color: var(--muted); }
-    .toc a { display:block; color: var(--text); text-decoration:none; padding: 8px 10px; border-radius: 10px; font-size: 14px; }
-    .toc a:hover { background: var(--panel-2); }
-
-    /* Sections */
-    section.card { border:1px solid rgba(255,255,255,0.10); background: var(--panel); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
-    section.card + section.card { margin-top: 18px; }
-    section.card h2 { margin-top: 0; margin-bottom: 8px; font-size: 26px; }
-    section.card p { margin: 10px 0; color: var(--text); }
-    .muted { color: var(--muted); }
-    .callout { border-left: 4px solid var(--brand); background: var(--panel-2); padding: 14px 16px; border-radius: 10px; }
-
-    /* Lists */
-    ul.clean { margin: 0; padding-left: 18px; }
-    ul.clean li { margin: 8px 0; }
-
-    /* Code blocks */
-    pre { margin: 12px 0; background: var(--code-bg); border:1px solid var(--code-bd); border-radius: var(--radius-md); padding: 14px 12px 12px; overflow:auto; position:relative; }
-    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 13.5px; }
-    .copy { position:absolute; top:8px; right:8px; background:transparent; border:1px solid var(--code-bd); color: var(--text); border-radius: 10px; padding:6px 10px; cursor:pointer; }
-
-    /* Example Q&A */
-    .qa { display:grid; gap:10px; grid-template-columns: 1fr; }
-    .qa .bubble { background: var(--panel-2); border:1px solid rgba(255,255,255,0.10); border-radius: 14px; padding: 14px; }
-    .qa .from { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
-
-    /* Footer */
-    footer { margin-top: 26px; text-align:center; color: var(--muted); }
-
-    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+    .nav { position: sticky; top: 0; backdrop-filter: blur(10px); background: rgba(10,10,11,0.6); border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .nav>.wrap { display:flex; align-items:center; gap:14px; padding:12px 20px; }
+    .logo { width:36px; height:36px; border-radius:10px; background: radial-gradient(120% 120% at 20% 0%, var(--ring-a), transparent 55%), radial-gradient(120% 120% at 95% 15%, var(--ring-b), transparent 60%), radial-gradient(130% 130% at 50% 120%, var(--ring-c), transparent 65%); }
+    .title { font-weight:700; font-size:16px; }
+    .hero { margin:26px 0; background:linear-gradient(180deg,rgba(255,255,255,0.03),transparent 60%); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius); padding:28px; box-shadow:var(--shadow); }
+    .hero h1 { margin:0 0 8px; font-size:clamp(28px,4.6vw,44px); background:linear-gradient(90deg,#eaf1ff 10%,#c9dcff 45%,#d2ffe7 95%); -webkit-background-clip:text; color:transparent; }
+    .toc { position:sticky; top:74px; border:1px solid rgba(255,255,255,0.10); background:var(--panel); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); }
+    section.card { border:1px solid rgba(255,255,255,0.10); background:var(--panel); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow); margin-bottom:18px; }
+    h2 { margin-top:0; font-size:26px; }
+    pre { background:var(--code-bg); border:1px solid var(--code-bd); border-radius:var(--radius-md); padding:14px; overflow:auto; }
+    .callout { border-left:4px solid var(--brand); background:var(--panel-2); padding:14px; border-radius:10px; }
   </style>
 </head>
 <body>
   <header class="nav">
     <div class="wrap">
-      <div class="logo" aria-hidden="true"></div>
+      <div class="logo"></div>
       <div class="title">Don’t Outsource Your Thinking <small>How I Use ChatGPT to Learn Responsibly</small></div>
-      <div style="margin-left:auto; display:flex; gap:10px;">
-        <button class="btn alt" id="toggleTheme" title="Toggle theme">Theme</button>
-        <button class="btn alt" id="printBtn" title="Print or Save as PDF">Print</button>
-      </div>
     </div>
   </header>
 
   <main class="wrap">
-    <section class="hero" id="top">
+    <section class="hero">
       <h1>Use AI to think better — not less.</h1>
-      <p class="kicker">When I first started using ChatGPT for school, I did the easy thing: paste a question, skim the solution, move on. It felt efficient — until the exam made it obvious I hadn’t learned much. That’s the trap: letting AI do the thinking for you. This playbook flips that dynamic.</p>
-      <div class="chips" aria-label="Feature chips">
-        <span class="chip"> 
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 3v18m9-9H3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Socratic prompts
-        </span>
-        <span class="chip"> 
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 9v6m16-6v6M8 7v10m8-10v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Voice Mode
-        </span>
-        <span class="chip">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M7 3h10v4H7zM5 7h14v14H5z" stroke="currentColor" stroke-width="2"/></svg>
-          Tasks & reminders
-        </span>
-        <span class="chip">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Auto‑quizzes
-        </span>
-        <span class="chip">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 3c4.97 0 9 4.03 9 9s-4.03 9-9 9-9-4.03-9-9" stroke="currentColor" stroke-width="2"/><path d="M12 3v9l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          Mind‑maps
-        </span>
-      </div>
-      <div class="cta-row">
-        <a class="btn" href="#section-1">Start the Playbook</a>
-        <button class="btn alt" id="copyAll">Copy All Prompts</button>
-      </div>
+      <p>When I first started using ChatGPT for school, I caught myself doing the easy thing: pasting in a homework question, skimming the solution, and moving on. It felt efficient, until exam time, when I realized I hadn’t actually learned much. That’s the trap: letting ChatGPT do the thinking for you.</p>
+      <p>This post is a playbook for responsible use. I show how to set guardrails so the model acts like a coach, not a crutch – you stay active, it nudges and checks. I use GPT in examples because it’s my daily driver, but every tactic here generalizes to modern LLMs (Claude, Gemini, Mistral, etc.).</p>
+      <p>Along the way, I’ll also highlight a few power features many people miss that can level up your learning: Custom Instructions for enabling Socratic guidance, Voice Mode for language learning, scheduled reminders/tasks to build habits, generating tailored quizzes for active recall, and quick mind-map prompts for better organizing your thoughts.</p>
+      <p><strong>Bottom line:</strong> use AI to think better, not think less – and explore some features that might make it easier!</p>
     </section>
 
-    <div class="content">
-      <!-- TOC -->
-      <nav class="toc" aria-label="On-page navigation">
+    <div class="content" style="display:grid; grid-template-columns:240px 1fr; gap:24px;">
+      <nav class="toc">
         <h3>Guide</h3>
         <a href="#section-1">1. System‑Level Instructions</a>
         <a href="#section-2">2. Voice Mode</a>
         <a href="#section-3">3. Tasks & Reminders</a>
         <a href="#section-4">4. Upload → Auto‑Quizzes</a>
         <a href="#section-5">5. Mind‑Maps</a>
-        <a href="#bottom-line">Bottom Line</a>
       </nav>
 
       <div>
-        <!-- 1. System-Level Instructions -->
         <section id="section-1" class="card">
-          <h2>1. System‑Level Instructions: Set the ground rules</h2>
-          <p><strong>What it is:</strong> <em>Custom Instructions</em> (Settings → Personalization → Custom Instructions) act like a standing contract for how your tutor should behave before you even start.</p>
-          <p><strong>Why it matters:</strong> Without a guardrail, you’ll end up typing “solve this” and copy‑pasting. With a guardrail, ChatGPT nudges you to think first.</p>
-          <div class="callout">
-            <p class="muted" style="margin:0"><strong>PS: What’s a Socratic tutor?</strong> A tutor who leads with questions. Instead of giving answers, they use carefully chosen prompts to help you surface the rules and apply them yourself.</p>
-          </div>
-
-          <h3 style="margin-top:18px">How to do it</h3>
-          <ul class="clean">
-            <li>Open <em>Settings → Personalization → Custom Instructions</em>.</li>
-            <li>In <em>“How would you like ChatGPT to respond?”</em>, paste:</li>
+          <h2>1. System‑Level Instructions: Setting the Ground Rules</h2>
+          <p><strong>What it is:</strong> ChatGPT has a feature called Custom Instructions (Settings → Personalization → Custom Instructions in the app/website). Think of it like giving your tutor a “contract” about how you want them to behave before you start.</p>
+          <p><strong>Why it matters:</strong> Without it, you’ll be tempted to just type “solve this problem” and copy the answer. With it, ChatGPT automatically pushes you to think first.</p>
+          <p><strong>How to do it:</strong></p>
+          <ul>
+            <li>Go to Settings → Personalization.</li>
+            <li>In “How would you like ChatGPT to respond?” paste:</li>
           </ul>
-
-          <pre><button class="copy" data-target="ci">Copy</button><code id="ci">Always act like my Socratic tutor.
+          <pre>Always act like my Socratic tutor.
 When I ask a question, first give me 2–3 guiding questions that make me think.
-Only give hints after that, and only show me the full worked solution if I ask again.</code></pre>
-
-          <div class="qa" aria-label="Example">
-            <div class="bubble">
-              <div class="from">Me</div>
-              <div>What’s the derivative of x^2?</div>
-            </div>
-            <div class="bubble">
-              <div class="from">ChatGPT (with Socratic mode on)</div>
-              <div>What rule do you use when differentiating powers of <em>x</em>? What happens to the exponent when you apply that rule?</div>
-            </div>
-          </div>
+Only give hints after that, and only show me the full worked solution if I ask again.</pre>
+          <p class="callout"><strong>PS:</strong> A Socratic tutor is just shorthand for a tutor that teaches in the Socratic method: instead of giving you the answer, they ask you carefully chosen guiding questions that lead you toward the answer yourself.</p>
+          <p><strong>Example in action:</strong></p>
+          <pre>Me: What’s the derivative of x2?
+ChatGPT (with Socratic instructions on): What rule do you use when differentiating powers of x? What happens to the exponent when you apply that rule?</pre>
         </section>
 
-        <!-- 2. Voice Mode -->
         <section id="section-2" class="card">
-          <h2>2. Voice Mode: Your personal language lab</h2>
-          <p><strong>What it is:</strong> In the mobile app, tap the audio icon (three vertical sound bars) to talk. ChatGPT can understand dozens of languages and accents.</p>
-          <p><strong>Why it matters:</strong> It never gets tired or judgmental. You can slow it down (<em>“Speak more slowly”</em>), and it won’t interrupt until you’re done. Switch roles: patient teacher, casual friend, strict examiner.</p>
-          <h3 style="margin-top:18px">How to do it</h3>
-          <ul class="clean">
+          <h2>2. Voice Mode: Your Personal Language Lab</h2>
+          <p><strong>What it is:</strong> In the mobile app, tap the audio icon (the one with three vertical sound bars) → ChatGPT will actually speak back to you. It can understand dozens of languages and accents.</p>
+          <p><strong>Why it matters:</strong> It never gets tired, never laughs at mistakes. It can slow down speech (say: “Speak more slowly”). It won’t interrupt you – it waits until you finish talking. You can switch roles: ask it to be a patient teacher, a casual friend, or even a strict examiner.</p>
+          <p><strong>How to do it:</strong></p>
+          <ul>
             <li>Open the ChatGPT app → tap the audio icon.</li>
-            <li>Say: <em>“Let’s practice in Spanish.”</em></li>
-            <li>Use a starter prompt like:</li>
+            <li>Say: “Let’s practice in Spanish.”</li>
+            <li>Then try a prompt like:</li>
           </ul>
-
-          <pre><button class="copy" data-target="voice">Copy</button><code id="voice">You are my Spanish tutor. Only speak in Spanish.
-If I make a mistake, correct me gently, repeat the right version, and then give me a slightly harder sentence to try.
-Speak slowly and clearly like a teacher.</code></pre>
+          <pre>You are my Spanish tutor.  Only speak in Spanish.
+If I make a mistake, correct me gently, repeat the right version, and then give me a slightly harder sentence to try.  Speak slowly and clearly like a teacher.</pre>
         </section>
 
-        <!-- 3. Tasks & Reminders -->
         <section id="section-3" class="card">
-          <h2>3. Tasks & Reminders: Outsource your discipline</h2>
-          <p><strong>What it is:</strong> Schedule nudges (“buzz your phone”) so consistency isn’t left to willpower.</p>
-          <p><strong>Why it matters:</strong> Habits win long games. Let automation keep score so your brain can focus on learning.</p>
-
-          <h3 style="margin-top:18px">How to do it</h3>
-          <p>Ask ChatGPT to schedule a daily nudge. Example:</p>
-          <pre><button class="copy" data-target="tasks">Copy</button><code id="tasks">Remind me every day at 8pm to review 10 flashcards.
-If I skip, escalate with a stronger pep talk the next day.</code></pre>
-
-          <p class="muted">Other ideas I use:</p>
-          <ul class="clean">
+          <h2>3. Tasks & Reminders: Outsource Your Discipline</h2>
+          <p><strong>What it is:</strong> ChatGPT can send push notifications (“buzz your phone”) on a schedule. These are called tasks.</p>
+          <p><strong>Why it matters:</strong> Building habits is about consistency. Instead of relying on willpower, let ChatGPT nag you at the same time every day.</p>
+          <p><strong>How to do it:</strong></p>
+          <pre>Remind me every day at 8pm to review 10 flashcards.  If I skip, escalate with a stronger pep talk the next day.</pre>
+          <p><strong>Use cases I’ve tried:</strong></p>
+          <ul>
             <li>“Buzz me every morning at 9am to review yesterday’s lecture.”</li>
             <li>“At 6pm daily, quiz me on 5 random Spanish vocab words.”</li>
             <li>“Every Friday at 4pm, remind me to review my problem set mistakes.”</li>
           </ul>
         </section>
 
-        <!-- 4. Upload + Quizzes -->
         <section id="section-4" class="card">
-          <h2>4. Upload notes + practice tests → auto‑generate quizzes</h2>
-          <p><strong>What it is:</strong> Drop lecture notes, slides, or textbook passages into the chat.</p>
-          <p><strong>Why it matters:</strong> Reading is passive; quizzing is active. Convert source material into immediate practice.</p>
-
-          <h3 style="margin-top:18px">Prompt to try</h3>
-          <pre><button class="copy" data-target="quiz">Copy</button><code id="quiz">Here are my notes. Make me a 10‑question multiple choice quiz in the style my professor uses.
-Add 2 tricky distractor answers to each. At the end, give me the answer key with 1–2 sentence explanations.</code></pre>
-
-          <div class="callout">
-            <p style="margin:0 0 8px"><strong>Example (AP Psychology):</strong></p>
-            <pre style="margin:0"><code>Q1. Which neurotransmitter is most associated with mood regulation?
-a) Dopamine  b) Serotonin  c) Acetylcholine  d) GABA
-Correct: b) Serotonin — key role in mood and well‑being.</code></pre>
-          </div>
+          <h2>4. Upload Notes + Practice Tests → Auto‑Generate Quizzes</h2>
+          <p><strong>What it is:</strong> Drop lecture notes, slides, or textbook passages directly into ChatGPT.</p>
+          <p><strong>Why it matters:</strong> Reading notes is passive. Being quizzed is active. ChatGPT can instantly turn your material into practice questions that feel like your real exam.</p>
+          <p><strong>Prompt to Try:</strong></p>
+          <pre>Here are my notes.  Make me a 10-question multiple choice quiz in the style my professor uses.  Add 2 tricky distractor answers to each.  At the end, give me the answer key with 1–2 sentence explanations.</pre>
+          <p><strong>Example (for AP Psychology):</strong></p>
+          <pre>Q1. Which neurotransmitter is most associated with mood regulation?
+a) Dopamine
+b) Serotonin
+c) Acetylcholine
+d) GABA
+Correct: b) Serotonin — it plays a key role in mood and well-being.</pre>
         </section>
 
-        <!-- 5. Mind Maps -->
         <section id="section-5" class="card">
-          <h2>5. Make mind‑maps for the big picture (my favorite)</h2>
-          <p><strong>The problem:</strong> Dense paragraphs hide structure.</p>
-          <p><strong>The fix:</strong> Ask ChatGPT to produce a hierarchical outline you can paste into your mind‑map app.</p>
-
-          <h3 style="margin-top:18px">Prompt to try</h3>
-          <pre><button class="copy" data-target="mind">Copy</button><code id="mind">Make me a mind map of &lsqb;concept&rsqb;.
-Show main branches, sub‑branches, and examples. Format in bullets so I can paste into a mind‑map app.</code></pre>
-
-          <div class="callout">
-            <p style="margin:0 0 8px"><strong>Example (Photosynthesis):</strong></p>
-            <ul class="clean" style="margin:0">
-              <li><strong>Photosynthesis</strong>
-                <ul class="clean">
-                  <li><strong>Light Reactions</strong> — Location: Thylakoid membranes; Input: Light + H₂O; Output: ATP, NADPH, O₂</li>
-                  <li><strong>Calvin Cycle</strong> — Location: Stroma; Input: ATP, NADPH, CO₂; Output: Glucose</li>
-                </ul>
-              </li>
-            </ul>
-          </div>
+          <h2>5. Make Mind Maps for the Big Picture (My Favorite!)</h2>
+          <p><strong>The problem:</strong> Complex topics get overwhelming when you only see them as paragraphs after paragraphs of text.</p>
+          <p><strong>The fix:</strong> Ask ChatGPT to break concepts into structured mind maps.</p>
+          <p><strong>Prompt to Try:</strong></p>
+          <pre>Make me a mind map of [concept].  Show main branches, sub-branches, and examples.  Format it in bullets so I can copy it into a mind-map app later.</pre>
+          <p><strong>Example for Photosynthesis:</strong></p>
+          <pre>Photosynthesis
+Light Reactions
+Location: Thylakoid membranes
+Input: Light + H2O
+Output: ATP, NADPH, O2
+Calvin Cycle
+Location: Stroma
+Input: ATP, NADPH, CO2
+Output: Glucose</pre>
         </section>
 
-        <!-- Bottom line -->
-        <section id="bottom-line" class="card">
-          <h2>Bottom line</h2>
-          <p>Use AI to <em>think better</em>, not <em>think less</em>. Set the contract up front (Socratic guidance), practice out loud (Voice Mode), outsource consistency (tasks), convert notes into questions (quizzes), and keep the big picture visible (mind‑maps). You stay in the driver’s seat; the model rides shotgun.</p>
+        <section class="card">
+          <h2>Bottom Line</h2>
+          <p>Use AI to <em>think better</em>, not <em>think less</em> – and explore some features that might make it easier!</p>
         </section>
-
-        <footer>
-          <p>© <span id="yr"></span> Don’t Outsource Your Thinking. Single‑file HTML. No build tools. Copy, tweak, ship.</p>
-        </footer>
       </div>
     </div>
   </main>
-
-  <script>
-    // Year
-    document.getElementById('yr').textContent = new Date().getFullYear();
-
-    // Copy buttons
-    function copyFrom(id){
-      const el = document.getElementById(id);
-      const text = el ? el.innerText : '';
-      if(!text) return;
-      navigator.clipboard.writeText(text).then(()=>{
-        const btns = document.querySelectorAll('[data-target="'+id+'"]');
-        btns.forEach(b=>{ const old=b.textContent; b.textContent='Copied'; setTimeout(()=>b.textContent='Copy',1200); });
-      });
-    }
-    document.querySelectorAll('.copy').forEach(btn=>{
-      btn.addEventListener('click', ()=> copyFrom(btn.getAttribute('data-target')));
-    });
-
-    // Copy all prompts (CI + Voice + Tasks + Quiz + Mind)
-    document.getElementById('copyAll').addEventListener('click', ()=>{
-      const ids = ['ci','voice','tasks','quiz','mind'];
-      const blob = ids.map(id => '--- '+id.toUpperCase()+' ---\n'+(document.getElementById(id)?.innerText||''))
-                      .join('\n\n');
-      navigator.clipboard.writeText(blob).then(()=>{
-        const btn = document.getElementById('copyAll');
-        const old = btn.textContent; btn.textContent='All Prompts Copied';
-        setTimeout(()=> btn.textContent=old, 1400);
-      });
-    });
-
-    // Theme toggle (light/dark)
-    const toggle = document.getElementById('toggleTheme');
-    toggle.addEventListener('click', ()=>{
-      const light = document.documentElement.classList.toggle('light');
-      if(light){
-        document.documentElement.style.setProperty('--bg', '#fbfbfd');
-        document.documentElement.style.setProperty('--panel', '#ffffff');
-        document.documentElement.style.setProperty('--panel-2', '#f5f7fb');
-        document.documentElement.style.setProperty('--text', '#111317');
-        document.documentElement.style.setProperty('--muted', '#475466');
-        document.documentElement.style.setProperty('--link', '#2b78ff');
-        document.documentElement.style.setProperty('--code-bg', '#f7f9fd');
-        document.documentElement.style.setProperty('--code-bd', '#e6ecf6');
-        document.documentElement.style.setProperty('--chip', '#f2f5fb');
-        document.documentElement.style.setProperty('--chip-bd', '#e6ecf6');
-        document.documentElement.style.setProperty('--shadow', '0 8px 24px rgba(0,0,0,0.08)');
-      } else {
-        // revert by reloading; keeps CSS tidy and deterministic
-        location.reload();
-      }
-    });
-
-    // Print (to PDF)
-    document.getElementById('printBtn').addEventListener('click', ()=> window.print());
-  </script>
 </body>
 </html>
