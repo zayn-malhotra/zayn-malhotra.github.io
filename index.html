@@ -1,315 +1,378 @@
-<!DOCTYPE html>
-<html lang="en-US">
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Family Plan Dashboard Demo</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Don’t Outsource Your Thinking — Use ChatGPT Responsibly</title>
+  <meta name="description" content="A polished, single‑file guide for using ChatGPT to learn responsibly: Socratic setup, Voice Mode, reminders, quizzes, and mind‑maps." />
   <style>
-    /* ---------- Global ---------- */
-    body { margin:0; font-family: Arial, sans-serif; background:#f1f3f4; color:#202124; }
-    header, section, main { padding:16px; }
-    header { background:#fff; border-bottom:1px solid #ddd; position:sticky; top:0; display:flex; align-items:center; }
-    #logo { height:80px; margin-right:12px; }
-    h1 { margin:0; font-size:20px; flex:1; }
-
-    /* ---------- AI Loader (star + rotating dot-ring) ---------- */
-    #aiLoaderContainer {
-      position: relative;
-      width: 80px; height: 80px;
-      margin: 0 auto 16px;
-    }
-    #aiStar {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      object-fit: contain;
-      /* spin in place */
-      animation: starSpin 2s linear infinite;
-    }
-    @keyframes starSpin {
-      to { transform: rotate(360deg); }
-    }
-    #aiRing {
-      position: absolute;
-      width: 60%; height: 60%;
-      top: 20%; left: 20%;
-      transform-origin: 50% 50%;
-      animation: ringSpin 2.5s ease-in-out infinite;
-    }
-    @keyframes ringSpin {
-      0%   { transform: rotate(0deg)   scale(1); }
-      50%  { transform: rotate(360deg) scale(1.1); }
-      100% { transform: rotate(720deg) scale(1); }
+    :root {
+      --bg: #0b0b0c;         /* deep near-black */
+      --panel: #111214;      /* card */
+      --panel-2: #15171b;    /* elevated */
+      --text: #e9edf1;       /* main text */
+      --muted: #aab3be;      /* secondary */
+      --link: #9fd2ff;       /* links */
+      --ring-a: #5de0e6;     /* siri-ish */
+      --ring-b: #b58cff;     /* siri-ish */
+      --ring-c: #94fbab;     /* siri-ish */
+      --brand: #c6d2ff;
+      --ok: #a6f0c6;
+      --warn: #ffd29a;
+      --danger: #ff9ea6;
+      --code-bg: #0f1115;
+      --code-bd: #2b2f3a;
+      --chip: #1a1d23;
+      --chip-bd: #2a313b;
+      --shadow: 0 10px 30px rgba(0,0,0,0.45);
+      --radius: 16px;
+      --radius-md: 12px;
+      --radius-sm: 10px;
+      --maxw: 1000px;
     }
 
-    /* ---------- ML Loader ---------- */
-    #mlLoader { display:none; text-align:center; }
-    #mlLoader p { font-size:18px; margin-bottom:8px; }
-    #progressBar {
-      position:relative; width:80%; height:8px; background:#ddd;
-      margin:0 auto 32px; border-radius:4px; overflow:hidden;
-    }
-    #progressFill {
-      width:0; height:100%;
-      background:linear-gradient(270deg, #4285f4, #34a853);
-      animation:fillBar 7.7s linear forwards;
-    }
-    @keyframes fillBar { to { width:100%; } }
-
-    /* ---------- Step Text ---------- */
-    #mlSteps { list-style:none; padding:0; margin-top:24px; }
-    .step {
-      opacity:0; transform:translateX(-20px);
-      transition:transform .5s ease, opacity .5s ease, color .5s ease;
-      font-family: system-ui, -apple-system, sans-serif;
-      font-weight:600; font-size:16px; margin:12px 0; color:#202124;
-    }
-    .step.visible {
-      opacity:1; transform:translateX(0); color:#34a853;
+    @media (prefers-color-scheme: light) {
+      :root{
+        --bg: #fbfbfd;
+        --panel: #ffffff;
+        --panel-2: #f5f7fb;
+        --text: #111317;
+        --muted: #475466;
+        --link: #2b78ff;
+        --code-bg: #f7f9fd;
+        --code-bd: #e6ecf6;
+        --chip: #f2f5fb;
+        --chip-bd: #e6ecf6;
+        --shadow: 0 8px 24px rgba(0,0,0,0.08);
+      }
     }
 
-    /* ---------- ML Success ---------- */
-    #mlSuccess { display:none; text-align:center; padding:40px; }
-    #mlSuccess .checkmark { font-size:64px; color:#34a853; margin-bottom:16px; }
-    #mlSuccess .successText {
-      font-size:20px; opacity:0; transform:scale(0.8);
-      animation:fadeZoom .6s ease-out forwards .3s;
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: radial-gradient(1200px 900px at 80% -10%, rgba(149, 110, 255, 0.12), transparent 60%),
+                  radial-gradient(1000px 800px at -10% 20%, rgba(90, 225, 234, 0.10), transparent 65%),
+                  var(--bg);
+      color: var(--text);
+      font: 16px/1.55 ui-sans-serif, -apple-system, system-ui, Segoe UI, Roboto, Inter, Helvetica, Arial, Apple Color Emoji, Segoe UI Emoji;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
-    @keyframes fadeZoom { to { opacity:1; transform:scale(1); } }
 
-    /* ---------- Dashboard Fade-In ---------- */
-    #planSection {
-      opacity:0; filter:blur(8px);
-      transition:opacity .6s ease-out, filter .6s ease-out;
-    }
-    #planSection.visible {
-      opacity:1; filter:blur(0);
-    }
-    #planTableContainer { display:none; }
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 28px 20px 80px; }
 
-    /* ---------- Table ---------- */
-    table { width:100%; border-collapse:collapse; margin-bottom:16px; }
-    th, td { padding:12px 8px; text-align:left; border-bottom:1px solid #eee; }
-    th { background:#f1f3f4; font-weight:bold; }
-    .row-phone { background:#e8f0fe; }
-    .row-extra, .row-data { background:#e8f5e9; }
-    .separator-row td { background:#ddd; text-align:center; font-weight:bold; padding:8px; }
+    /* Top bar */
+    .nav {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: saturate(140%) blur(10px);
+      background: linear-gradient(180deg, rgba(10,10,11,0.6), rgba(10,10,11,0.1));
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .nav > .wrap { display: flex; align-items: center; gap: 14px; padding-top: 12px; padding-bottom: 12px; }
+    .logo {
+      width: 36px; height: 36px; border-radius: 10px; position: relative; overflow: hidden;
+      background: radial-gradient(120% 120% at 20% 0%, var(--ring-a), transparent 55%),
+                  radial-gradient(120% 120% at 95% 15%, var(--ring-b), transparent 60%),
+                  radial-gradient(130% 130% at 50% 120%, var(--ring-c), transparent 65%);
+      box-shadow: var(--shadow);
+    }
+    .title { font-weight: 700; letter-spacing: .2px; font-size: 16px; }
+    .title small { display:block; font-weight: 500; color: var(--muted); letter-spacing: .1px; }
 
-    .highlight { font-weight:bold; margin-top:8px; }
-    .button {
-      display:block; width:100%; background:#ccc; color:#666;
-      text-align:center; padding:12px; font-weight:bold;
-      border:none; border-radius:6px; font-size:16px;
-      margin-top:8px; cursor:not-allowed;
+    /* Hero */
+    .hero {
+      margin-top: 26px; margin-bottom: 26px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent 60%);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
     }
-    .button.enabled {
-      background:#f8ff3c; color:#000; cursor:pointer;
-      transition:background .3s;
+    .hero h1 {
+      margin: 0 0 8px; font-size: clamp(28px, 4.6vw, 44px); line-height: 1.15;
+      background: linear-gradient(90deg, #eaf1ff 10%, #c9dcff 45%, #d2ffe7 95%);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
     }
-    .button.enabled:hover { background:#e0e733; }
+    .kicker { color: var(--muted); margin-top: 6px; }
 
-    /* ---------- Purchase/Success ---------- */
-    .spinner {
-      border:4px solid #eee; border-top:4px solid #4285f4;
-      border-radius:50%; width:32px; height:32px;
-      animation:spin 1s linear infinite; margin:0 auto 16px;
-    }
-    @keyframes spin { to { transform:rotate(360deg); } }
+    .chips { display:flex; flex-wrap:wrap; gap: 10px; margin-top: 16px; }
+    .chip { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius: 999px; border:1px solid var(--chip-bd); background: var(--chip); font-size: 13px; color: var(--text); }
+    .chip svg { opacity:.9 }
 
-    #successMessage {
-      display:none; text-align:center; padding:16px;
-      opacity:0; transform:scale(0.8);
-    }
-    #successMessage.visible {
-      display:block;
-      animation:fadeZoom .4s ease-out forwards;
-    }
+    .cta-row { margin-top: 18px; display:flex; gap:12px; flex-wrap:wrap; }
+    .btn { appearance:none; border:none; cursor:pointer; border-radius: 12px; padding: 12px 16px; font-weight: 600; color: #0b0b0c; background: linear-gradient(90deg, #b7f8ff, #cdf0ff, #d0ffe8); box-shadow: var(--shadow); }
+    .btn.alt { background: transparent; color: var(--text); border:1px solid rgba(255,255,255,0.15); }
+
+    /* Layout */
+    .content { display:grid; grid-template-columns: 240px 1fr; gap: 24px; align-items:start; }
+    @media (max-width: 980px){ .content { grid-template-columns: 1fr; } .toc { position: static; } }
+
+    .toc { position: sticky; top: 74px; border:1px solid rgba(255,255,255,0.10); background: var(--panel); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+    .toc h3 { margin: 0 0 10px; font-size: 14px; letter-spacing:.2px; color: var(--muted); }
+    .toc a { display:block; color: var(--text); text-decoration:none; padding: 8px 10px; border-radius: 10px; font-size: 14px; }
+    .toc a:hover { background: var(--panel-2); }
+
+    /* Sections */
+    section.card { border:1px solid rgba(255,255,255,0.10); background: var(--panel); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
+    section.card + section.card { margin-top: 18px; }
+    section.card h2 { margin-top: 0; margin-bottom: 8px; font-size: 26px; }
+    section.card p { margin: 10px 0; color: var(--text); }
+    .muted { color: var(--muted); }
+    .callout { border-left: 4px solid var(--brand); background: var(--panel-2); padding: 14px 16px; border-radius: 10px; }
+
+    /* Lists */
+    ul.clean { margin: 0; padding-left: 18px; }
+    ul.clean li { margin: 8px 0; }
+
+    /* Code blocks */
+    pre { margin: 12px 0; background: var(--code-bg); border:1px solid var(--code-bd); border-radius: var(--radius-md); padding: 14px 12px 12px; overflow:auto; position:relative; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 13.5px; }
+    .copy { position:absolute; top:8px; right:8px; background:transparent; border:1px solid var(--code-bd); color: var(--text); border-radius: 10px; padding:6px 10px; cursor:pointer; }
+
+    /* Example Q&A */
+    .qa { display:grid; gap:10px; grid-template-columns: 1fr; }
+    .qa .bubble { background: var(--panel-2); border:1px solid rgba(255,255,255,0.10); border-radius: 14px; padding: 14px; }
+    .qa .from { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+
+    /* Footer */
+    footer { margin-top: 26px; text-align:center; color: var(--muted); }
+
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
   </style>
 </head>
 <body>
-
-  <!-- Header -->
-  <header>
-    <img id="logo" src="verizayn-logo.png" alt="VeriZayn logo">
-    <h1>Family Plan Dashboard</h1>
+  <header class="nav">
+    <div class="wrap">
+      <div class="logo" aria-hidden="true"></div>
+      <div class="title">Don’t Outsource Your Thinking <small>How I Use ChatGPT to Learn Responsibly</small></div>
+      <div style="margin-left:auto; display:flex; gap:10px;">
+        <button class="btn alt" id="toggleTheme" title="Toggle theme">Theme</button>
+        <button class="btn alt" id="printBtn" title="Print or Save as PDF">Print</button>
+      </div>
+    </div>
   </header>
 
-  <!-- 1) ML Loading -->
-  <section id="mlLoader">
-    <p>Running Cellular Intelligence Model…</p>
-
-    <div id="aiLoaderContainer">
-      <img id="aiStar" src="ai-icon.png" alt="AI Logo">
-      
-    </div>
-
-    <div id="progressBar"><div id="progressFill"></div></div>
-    <ul id="mlSteps"></ul>
-  </section>
-
-  <!-- 2) ML Success -->
-  <section id="mlSuccess">
-    <div class="checkmark">✔</div>
-    <div class="successText">Found Optimal Plan!</div>
-  </section>
-
-  <!-- 3) Dashboard -->
-  <main id="planSection">
-    <div id="planTableContainer">
-      <h2>Device &amp; Plan Comparison</h2>
-      <table>
-        <thead>
-          <tr><th>#</th><th>Device</th><th>Line</th><th>Current</th><th>New</th></tr>
-        </thead>
-        <tbody id="planTableBody"></tbody>
-      </table>
-      <div class="highlight" id="totals"></div>
-      <div>
-        <input type="checkbox" id="termsCheckbox">
-        <label for="termsCheckbox"> I accept the <a href="#">Terms &amp; Conditions</a></label>
+  <main class="wrap">
+    <section class="hero" id="top">
+      <h1>Use AI to think better — not less.</h1>
+      <p class="kicker">When I first started using ChatGPT for school, I did the easy thing: paste a question, skim the solution, move on. It felt efficient — until the exam made it obvious I hadn’t learned much. That’s the trap: letting AI do the thinking for you. This playbook flips that dynamic.</p>
+      <div class="chips" aria-label="Feature chips">
+        <span class="chip"> 
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 3v18m9-9H3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Socratic prompts
+        </span>
+        <span class="chip"> 
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 9v6m16-6v6M8 7v10m8-10v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Voice Mode
+        </span>
+        <span class="chip">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M7 3h10v4H7zM5 7h14v14H5z" stroke="currentColor" stroke-width="2"/></svg>
+          Tasks & reminders
+        </span>
+        <span class="chip">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Auto‑quizzes
+        </span>
+        <span class="chip">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 3c4.97 0 9 4.03 9 9s-4.03 9-9 9-9-4.03-9-9" stroke="currentColor" stroke-width="2"/><path d="M12 3v9l6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Mind‑maps
+        </span>
       </div>
-      <button id="purchaseButton" class="button" disabled>Purchase New Plan</button>
+      <div class="cta-row">
+        <a class="btn" href="#section-1">Start the Playbook</a>
+        <button class="btn alt" id="copyAll">Copy All Prompts</button>
+      </div>
+    </section>
+
+    <div class="content">
+      <!-- TOC -->
+      <nav class="toc" aria-label="On-page navigation">
+        <h3>Guide</h3>
+        <a href="#section-1">1. System‑Level Instructions</a>
+        <a href="#section-2">2. Voice Mode</a>
+        <a href="#section-3">3. Tasks & Reminders</a>
+        <a href="#section-4">4. Upload → Auto‑Quizzes</a>
+        <a href="#section-5">5. Mind‑Maps</a>
+        <a href="#bottom-line">Bottom Line</a>
+      </nav>
+
+      <div>
+        <!-- 1. System-Level Instructions -->
+        <section id="section-1" class="card">
+          <h2>1. System‑Level Instructions: Set the ground rules</h2>
+          <p><strong>What it is:</strong> <em>Custom Instructions</em> (Settings → Personalization → Custom Instructions) act like a standing contract for how your tutor should behave before you even start.</p>
+          <p><strong>Why it matters:</strong> Without a guardrail, you’ll end up typing “solve this” and copy‑pasting. With a guardrail, ChatGPT nudges you to think first.</p>
+          <div class="callout">
+            <p class="muted" style="margin:0"><strong>PS: What’s a Socratic tutor?</strong> A tutor who leads with questions. Instead of giving answers, they use carefully chosen prompts to help you surface the rules and apply them yourself.</p>
+          </div>
+
+          <h3 style="margin-top:18px">How to do it</h3>
+          <ul class="clean">
+            <li>Open <em>Settings → Personalization → Custom Instructions</em>.</li>
+            <li>In <em>“How would you like ChatGPT to respond?”</em>, paste:</li>
+          </ul>
+
+          <pre><button class="copy" data-target="ci">Copy</button><code id="ci">Always act like my Socratic tutor.
+When I ask a question, first give me 2–3 guiding questions that make me think.
+Only give hints after that, and only show me the full worked solution if I ask again.</code></pre>
+
+          <div class="qa" aria-label="Example">
+            <div class="bubble">
+              <div class="from">Me</div>
+              <div>What’s the derivative of x^2?</div>
+            </div>
+            <div class="bubble">
+              <div class="from">ChatGPT (with Socratic mode on)</div>
+              <div>What rule do you use when differentiating powers of <em>x</em>? What happens to the exponent when you apply that rule?</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. Voice Mode -->
+        <section id="section-2" class="card">
+          <h2>2. Voice Mode: Your personal language lab</h2>
+          <p><strong>What it is:</strong> In the mobile app, tap the audio icon (three vertical sound bars) to talk. ChatGPT can understand dozens of languages and accents.</p>
+          <p><strong>Why it matters:</strong> It never gets tired or judgmental. You can slow it down (<em>“Speak more slowly”</em>), and it won’t interrupt until you’re done. Switch roles: patient teacher, casual friend, strict examiner.</p>
+          <h3 style="margin-top:18px">How to do it</h3>
+          <ul class="clean">
+            <li>Open the ChatGPT app → tap the audio icon.</li>
+            <li>Say: <em>“Let’s practice in Spanish.”</em></li>
+            <li>Use a starter prompt like:</li>
+          </ul>
+
+          <pre><button class="copy" data-target="voice">Copy</button><code id="voice">You are my Spanish tutor. Only speak in Spanish.
+If I make a mistake, correct me gently, repeat the right version, and then give me a slightly harder sentence to try.
+Speak slowly and clearly like a teacher.</code></pre>
+        </section>
+
+        <!-- 3. Tasks & Reminders -->
+        <section id="section-3" class="card">
+          <h2>3. Tasks & Reminders: Outsource your discipline</h2>
+          <p><strong>What it is:</strong> Schedule nudges (“buzz your phone”) so consistency isn’t left to willpower.</p>
+          <p><strong>Why it matters:</strong> Habits win long games. Let automation keep score so your brain can focus on learning.</p>
+
+          <h3 style="margin-top:18px">How to do it</h3>
+          <p>Ask ChatGPT to schedule a daily nudge. Example:</p>
+          <pre><button class="copy" data-target="tasks">Copy</button><code id="tasks">Remind me every day at 8pm to review 10 flashcards.
+If I skip, escalate with a stronger pep talk the next day.</code></pre>
+
+          <p class="muted">Other ideas I use:</p>
+          <ul class="clean">
+            <li>“Buzz me every morning at 9am to review yesterday’s lecture.”</li>
+            <li>“At 6pm daily, quiz me on 5 random Spanish vocab words.”</li>
+            <li>“Every Friday at 4pm, remind me to review my problem set mistakes.”</li>
+          </ul>
+        </section>
+
+        <!-- 4. Upload + Quizzes -->
+        <section id="section-4" class="card">
+          <h2>4. Upload notes + practice tests → auto‑generate quizzes</h2>
+          <p><strong>What it is:</strong> Drop lecture notes, slides, or textbook passages into the chat.</p>
+          <p><strong>Why it matters:</strong> Reading is passive; quizzing is active. Convert source material into immediate practice.</p>
+
+          <h3 style="margin-top:18px">Prompt to try</h3>
+          <pre><button class="copy" data-target="quiz">Copy</button><code id="quiz">Here are my notes. Make me a 10‑question multiple choice quiz in the style my professor uses.
+Add 2 tricky distractor answers to each. At the end, give me the answer key with 1–2 sentence explanations.</code></pre>
+
+          <div class="callout">
+            <p style="margin:0 0 8px"><strong>Example (AP Psychology):</strong></p>
+            <pre style="margin:0"><code>Q1. Which neurotransmitter is most associated with mood regulation?
+a) Dopamine  b) Serotonin  c) Acetylcholine  d) GABA
+Correct: b) Serotonin — key role in mood and well‑being.</code></pre>
+          </div>
+        </section>
+
+        <!-- 5. Mind Maps -->
+        <section id="section-5" class="card">
+          <h2>5. Make mind‑maps for the big picture (my favorite)</h2>
+          <p><strong>The problem:</strong> Dense paragraphs hide structure.</p>
+          <p><strong>The fix:</strong> Ask ChatGPT to produce a hierarchical outline you can paste into your mind‑map app.</p>
+
+          <h3 style="margin-top:18px">Prompt to try</h3>
+          <pre><button class="copy" data-target="mind">Copy</button><code id="mind">Make me a mind map of &lsqb;concept&rsqb;.
+Show main branches, sub‑branches, and examples. Format in bullets so I can paste into a mind‑map app.</code></pre>
+
+          <div class="callout">
+            <p style="margin:0 0 8px"><strong>Example (Photosynthesis):</strong></p>
+            <ul class="clean" style="margin:0">
+              <li><strong>Photosynthesis</strong>
+                <ul class="clean">
+                  <li><strong>Light Reactions</strong> — Location: Thylakoid membranes; Input: Light + H₂O; Output: ATP, NADPH, O₂</li>
+                  <li><strong>Calvin Cycle</strong> — Location: Stroma; Input: ATP, NADPH, CO₂; Output: Glucose</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Bottom line -->
+        <section id="bottom-line" class="card">
+          <h2>Bottom line</h2>
+          <p>Use AI to <em>think better</em>, not <em>think less</em>. Set the contract up front (Socratic guidance), practice out loud (Voice Mode), outsource consistency (tasks), convert notes into questions (quizzes), and keep the big picture visible (mind‑maps). You stay in the driver’s seat; the model rides shotgun.</p>
+        </section>
+
+        <footer>
+          <p>© <span id="yr"></span> Don’t Outsource Your Thinking. Single‑file HTML. No build tools. Copy, tweak, ship.</p>
+        </footer>
+      </div>
     </div>
-
-    <section id="purchaseLoader" style="display:none; text-align:center; padding:16px;">
-      <div class="spinner"></div>
-      <p>Processing your purchase...</p>
-    </section>
-
-    <section id="successMessage">
-      <div class="checkmark">✔</div>
-      <p>Success! Close this page to see your new SIMs provisioned.</p>
-    </section>
   </main>
 
   <script>
-    // Data & rates
-    const primaryPhones   = [
-      { name: "Zayn’s iPhone", last4: "9014" },
-      { name: "Mom’s iPhone",  last4: "9302" },
-      { name: "Dad’s iPhone",  last4: "8643" }
-    ];
-    const additionalPhones = [{ name: "Jamie’s iPhone", last4: "" }];
-    const dataDevices     = [
-      { name: "Granny’s iPad", last4: "" },
-      { name: "Extra eSIM",    last4: "" }
-    ];
-    const extraSim        = { name: "Extra eSIM", last4: "" };
-    const currentPhoneRate= 35, newPhoneRate = 20;
-    const currentDataRate = 0,  newDataRate  = 10;
+    // Year
+    document.getElementById('yr').textContent = new Date().getFullYear();
 
-    function formatCost(c){ return c>0?`$${c}`:'—'; }
-
-    // Steps & timing
-    const steps      = [
-      "Analyzing personal hotspot usage",
-      "Profiling device types",
-      "Checking roaming requirements",
-      "Modeling data consumption",
-      "Applying carrier discounts"
-    ];
-    const stepDelay   = 1200;   // ms
-    const successHold = 1400;   // ms
-    const totalTime   = stepDelay*steps.length + successHold + 500;
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const mlLoader    = document.getElementById("mlLoader");
-      const mlSuccess   = document.getElementById("mlSuccess");
-      const planSection = document.getElementById("planSection");
-      const planTable   = document.getElementById("planTableContainer");
-      const ul          = document.getElementById("mlSteps");
-
-      // show ML loader
-      mlLoader.style.display = "block";
-
-      // animate steps
-      steps.forEach((text, i) => {
-        const li = document.createElement("li");
-        li.className = "step";
-        li.textContent = text;
-        ul.appendChild(li);
-        setTimeout(() => li.classList.add("visible"),
-                   stepDelay*(i+1));
+    // Copy buttons
+    function copyFrom(id){
+      const el = document.getElementById(id);
+      const text = el ? el.innerText : '';
+      if(!text) return;
+      navigator.clipboard.writeText(text).then(()=>{
+        const btns = document.querySelectorAll('[data-target="'+id+'"]');
+        btns.forEach(b=>{ const old=b.textContent; b.textContent='Copied'; setTimeout(()=>b.textContent='Copy',1200); });
       });
-
-      // show ML success
-      setTimeout(() => {
-        mlLoader.style.display  = "none";
-        mlSuccess.style.display = "block";
-      }, stepDelay*steps.length + 300);
-
-      // reveal dashboard
-      setTimeout(() => {
-        mlSuccess.style.display     = "none";
-        planSection.classList.add("visible");
-        planTable.style.display     = "block";
-        renderPlanTable();
-      }, totalTime);
+    }
+    document.querySelectorAll('.copy').forEach(btn=>{
+      btn.addEventListener('click', ()=> copyFrom(btn.getAttribute('data-target')));
     });
 
-    function renderPlanTable() {
-      const tbody = document.getElementById("planTableBody");
-      let currentTotal = 0, newTotal = 0, idx = 1;
-
-      primaryPhones.forEach(d => {
-        const curr = currentPhoneRate, neu = newPhoneRate;
-        currentTotal += curr; newTotal += neu;
-        tbody.insertAdjacentHTML("beforeend", `
-          <tr class="row-phone">
-            <td>${idx++}</td><td>${d.name}</td><td>${d.last4||"—"}</td>
-            <td>${formatCost(curr)}</td><td>${formatCost(neu)}</td>
-          </tr>`);
+    // Copy all prompts (CI + Voice + Tasks + Quiz + Mind)
+    document.getElementById('copyAll').addEventListener('click', ()=>{
+      const ids = ['ci','voice','tasks','quiz','mind'];
+      const blob = ids.map(id => '--- '+id.toUpperCase()+' ---\n'+(document.getElementById(id)?.innerText||''))
+                      .join('\n\n');
+      navigator.clipboard.writeText(blob).then(()=>{
+        const btn = document.getElementById('copyAll');
+        const old = btn.textContent; btn.textContent='All Prompts Copied';
+        setTimeout(()=> btn.textContent=old, 1400);
       });
+    });
 
-      tbody.insertAdjacentHTML("beforeend", `
-        <tr class="separator-row"><td colspan="5">Additional Phone Lines</td></tr>`);
+    // Theme toggle (light/dark)
+    const toggle = document.getElementById('toggleTheme');
+    toggle.addEventListener('click', ()=>{
+      const light = document.documentElement.classList.toggle('light');
+      if(light){
+        document.documentElement.style.setProperty('--bg', '#fbfbfd');
+        document.documentElement.style.setProperty('--panel', '#ffffff');
+        document.documentElement.style.setProperty('--panel-2', '#f5f7fb');
+        document.documentElement.style.setProperty('--text', '#111317');
+        document.documentElement.style.setProperty('--muted', '#475466');
+        document.documentElement.style.setProperty('--link', '#2b78ff');
+        document.documentElement.style.setProperty('--code-bg', '#f7f9fd');
+        document.documentElement.style.setProperty('--code-bd', '#e6ecf6');
+        document.documentElement.style.setProperty('--chip', '#f2f5fb');
+        document.documentElement.style.setProperty('--chip-bd', '#e6ecf6');
+        document.documentElement.style.setProperty('--shadow', '0 8px 24px rgba(0,0,0,0.08)');
+      } else {
+        // revert by reloading; keeps CSS tidy and deterministic
+        location.reload();
+      }
+    });
 
-      additionalPhones.concat([extraSim]).forEach(d => {
-        const curr = 0, neu = newPhoneRate;
-        newTotal += neu;
-        tbody.insertAdjacentHTML("beforeend", `
-          <tr class="row-extra">
-            <td>${idx++}</td><td>${d.name}</td><td>${d.last4||"—"}</td>
-            <td>${formatCost(curr)}</td><td>${formatCost(neu)}</td>
-          </tr>`);
-      });
-
-      tbody.insertAdjacentHTML("beforeend", `
-        <tr class="separator-row"><td colspan="5">Additional Data Lines</td></tr>`);
-
-      dataDevices.forEach(d => {
-        const curr = currentDataRate, neu = newDataRate;
-        newTotal += neu;
-        tbody.insertAdjacentHTML("beforeend", `
-          <tr class="row-data">
-            <td>${idx++}</td><td>${d.name}</td><td>${d.last4||"—"}</td>
-            <td>${formatCost(curr)}</td><td>${formatCost(neu)}</td>
-          </tr>`);
-      });
-
-      document.getElementById("totals").textContent =
-        `Current Total: $${primaryPhones.length*currentPhoneRate}` +
-        ` • New Total: $${newTotal}`;
-    }
-
-    // Purchase flow
-    const terms      = document.getElementById("termsCheckbox");
-    const purchaseBtn= document.getElementById("purchaseButton");
-    terms.onchange = () => {
-      purchaseBtn.disabled = !terms.checked;
-      purchaseBtn.classList.toggle("enabled", terms.checked);
-    };
-    purchaseBtn.onclick = () => {
-      document.getElementById("planTableContainer").style.display = "none";
-      document.getElementById("purchaseLoader").style.display    = "block";
-      setTimeout(() => {
-        document.getElementById("purchaseLoader").style.display    = "none";
-        document.getElementById("successMessage").classList.add("visible");
-      }, 1500);
-    };
+    // Print (to PDF)
+    document.getElementById('printBtn').addEventListener('click', ()=> window.print());
   </script>
-
 </body>
 </html>
