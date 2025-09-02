@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Don’t Outsource Your Thinking — Use ChatGPT Responsibly</title>
   <style>
-    /* Same polished UI styles as before */
     :root {
       --bg: #0b0b0c;
       --panel: #111214;
@@ -35,10 +34,14 @@
     .hero { margin:26px 0; background:linear-gradient(180deg,rgba(255,255,255,0.03),transparent 60%); border:1px solid rgba(255,255,255,0.06); border-radius:var(--radius); padding:28px; box-shadow:var(--shadow); }
     .hero h1 { margin:0 0 8px; font-size:clamp(28px,4.6vw,44px); background:linear-gradient(90deg,#eaf1ff 10%,#c9dcff 45%,#d2ffe7 95%); -webkit-background-clip:text; color:transparent; }
     .toc { position:sticky; top:74px; border:1px solid rgba(255,255,255,0.10); background:var(--panel); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); }
+    .toc h3 { margin-top:0; color: var(--muted); font-size:14px; }
+    .toc a { display:block; margin:6px 0; color: var(--link); text-decoration:none; font-size:14px; }
+    .toc a:hover { text-decoration:underline; }
     section.card { border:1px solid rgba(255,255,255,0.10); background:var(--panel); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow); margin-bottom:18px; }
     h2 { margin-top:0; font-size:26px; }
     pre { background:var(--code-bg); border:1px solid var(--code-bd); border-radius:var(--radius-md); padding:14px; overflow:auto; }
     .callout { border-left:4px solid var(--brand); background:var(--panel-2); padding:14px; border-radius:10px; }
+    .theme-toggle { margin-left:auto; cursor:pointer; padding:6px 12px; border:1px solid rgba(255,255,255,0.2); border-radius:8px; background:transparent; color:var(--text); }
   </style>
 </head>
 <body>
@@ -46,6 +49,7 @@
     <div class="wrap">
       <div class="logo"></div>
       <div class="title">Don’t Outsource Your Thinking <small>How I Use ChatGPT to Learn Responsibly</small></div>
+      <button class="theme-toggle" id="themeToggle">Toggle Theme</button>
     </div>
   </header>
 
@@ -155,5 +159,32 @@ Output: Glucose</pre>
       </div>
     </div>
   </main>
+
+  <script>
+    const btn = document.getElementById('themeToggle');
+    btn.addEventListener('click', () => {
+      if(document.body.classList.contains('light')){
+        document.body.classList.remove('light');
+        document.documentElement.style.setProperty('--bg', '#0b0b0c');
+        document.documentElement.style.setProperty('--panel', '#111214');
+        document.documentElement.style.setProperty('--panel-2', '#15171b');
+        document.documentElement.style.setProperty('--text', '#e9edf1');
+        document.documentElement.style.setProperty('--muted', '#aab3be');
+        document.documentElement.style.setProperty('--link', '#9fd2ff');
+        document.documentElement.style.setProperty('--code-bg', '#0f1115');
+        document.documentElement.style.setProperty('--code-bd', '#2b2f3a');
+      } else {
+        document.body.classList.add('light');
+        document.documentElement.style.setProperty('--bg', '#fbfbfd');
+        document.documentElement.style.setProperty('--panel', '#ffffff');
+        document.documentElement.style.setProperty('--panel-2', '#f5f7fb');
+        document.documentElement.style.setProperty('--text', '#111317');
+        document.documentElement.style.setProperty('--muted', '#475466');
+        document.documentElement.style.setProperty('--link', '#2b78ff');
+        document.documentElement.style.setProperty('--code-bg', '#f7f9fd');
+        document.documentElement.style.setProperty('--code-bd', '#e6ecf6');
+      }
+    });
+  </script>
 </body>
 </html>
