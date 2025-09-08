@@ -1,1 +1,444 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zayn Malhotra</title>
+  <meta name="description" content="Vedansh (Zayn) Malhotra — Stanford MSCS (AI). Portfolio, CV, blog, and photo gallery." />
+  <!-- System font stack close to Apple SF Pro -->
+  <style>
+    :root { color-scheme: dark; }
+    html { scroll-behavior: smooth; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif; }
+  </style>
+  <!-- Tailwind (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            canvas: { 950:'#000000', 900:'#0b0b0c', 800:'#111113', 700:'#1a1a1c', 600:'#222225', 500:'#2b2b2f' },
+            ink: { 100:'#f5f5f7', 200:'#d2d2d7', 300:'#a1a1a6', 400:'#86868b' }
+          },
+          boxShadow: {
+            ring: '0 0 0 1px rgba(255,255,255,0.08) inset, 0 30px 50px rgba(0,0,0,0.6)'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .divider { height:1px; background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.08), rgba(255,255,255,0)); }
+    .card { background:#0b0b0c; border:1px solid rgba(255,255,255,.08); border-radius:20px; }
+    .glass { background:rgba(0,0,0,.6); backdrop-filter:saturate(180%) blur(20px); }
+    .hero-grad { background: radial-gradient(1200px 600px at 50% -20%, rgba(255,255,255,.12), rgba(0,0,0,0)); }
+    .section-title { letter-spacing:.3px; }
+    .tag { border:1px solid rgba(255,255,255,.12); border-radius:9999px; padding:.2rem .6rem; font-size:.75rem; color:#d2d2d7 }
+    /* Minimal prose for Markdown */
+    .prose p{margin:.9rem 0;color:#d2d2d7;line-height:1.7}
+    .prose h1{font-size:1.8rem;font-weight:800;color:#f5f5f7;margin:1.2rem 0 .6rem}
+    .prose h2{font-size:1.4rem;font-weight:700;color:#f5f5f7;margin:1rem 0 .5rem}
+    .prose h3{font-size:1.15rem;font-weight:600;color:#f5f5f7;margin:.8rem 0 .4rem}
+    .prose code{background:#111113;border:1px solid rgba(255,255,255,.08);padding:.1rem .35rem;border-radius:.4rem}
+    .prose pre{background:#0b0b0c;border:1px solid rgba(255,255,255,.08);padding:1rem;border-radius:12px;overflow:auto}
+  </style>
+</head>
+<body class="bg-canvas-950 text-ink-100">
+  <!-- NAV -->
+  <header class="fixed top-0 z-50 w-full">
+    <div class="glass border-b border-white/10">
+      <div class="mx-auto max-w-7xl px-6 h-16 flex items-center justify-between">
+        <a href="#home" class="text-lg font-semibold tracking-tight">Zayn</a>
+        <nav class="hidden md:flex items-center gap-7 text-sm text-ink-200">
+          <a class="hover:text-white/90" href="#about">About</a>
+          <a class="hover:text-white/90" href="#experience">Experience</a>
+          <a class="hover:text-white/90" href="#projects">Projects</a>
+          <a class="hover:text-white/90" href="#publications">Publications</a>
+          <a class="hover:text-white/90" href="#education">Education</a>
+          <a class="hover:text-white/90" href="#blog">Blog</a>
+          <a class="hover:text-white/90" href="#gallery">Gallery</a>
+          <a class="hover:text-white/90" href="#contact">Contact</a>
+        </nav>
+        <button id="menuBtn" class="md:hidden text-2xl">⋯</button>
+      </div>
+    </div>
+  </header>
 
+  <!-- HERO -->
+  <section id="home" class="pt-24">
+    <div class="hero-grad">
+      <div class="mx-auto max-w-7xl px-6 py-16 md:py-24">
+        <h1 class="text-4xl md:text-7xl font-extrabold tracking-tight leading-[1.05]">Vedansh (Zayn) Malhotra</h1>
+        <p class="mt-6 max-w-2xl text-lg md:text-2xl text-ink-300">Stanford MSCS (AI). Apple Intern. Educator & Researcher. I build rigorous, human‑centered AI and production software that earns trust.</p>
+        <div class="mt-8 flex flex-wrap gap-3 text-sm">
+          <a href="#about" class="rounded-full border border-white/20 px-5 py-2 hover:bg-white hover:text-black transition">About</a>
+          <a href="resume.pdf" target="_blank" class="rounded-full border border-white/20 px-5 py-2 hover:bg-white hover:text-black transition">Résumé</a>
+          <a href="mailto:zaynmalhotra@stanford.edu" class="rounded-full border border-white/20 px-5 py-2 hover:bg-white hover:text-black transition">Email</a>
+        </div>
+      </div>
+    </div>
+    <div class="divider"></div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="py-16 md:py-24">
+    <div class="mx-auto max-w-7xl px-6">
+      <h2 class="section-title text-2xl md:text-3xl font-semibold">About</h2>
+      <div class="mt-6 grid md:grid-cols-3 gap-8">
+        <p class="md:col-span-2 text-ink-200 leading-8">I’m a Stanford MSCS student focused on AI/ML. I’ve shipped real systems—from CoreML‑driven cellular intelligence & eSIM provisioning at Apple to AI tools that help students learn without outsourcing their thinking. I care about accuracy, usability, and fairness. Default: dark.</p>
+        <div class="card p-4">
+          <div class="text-sm text-ink-300">Quick facts</div>
+          <div class="mt-3 grid grid-cols-2 gap-3 text-sm">
+            <div class="rounded-xl border border-white/10 px-3 py-2">Bay Area, CA</div>
+            <div class="rounded-xl border border-white/10 px-3 py-2">EN / हिन्दी / Español / 中文</div>
+            <div class="rounded-xl border border-white/10 px-3 py-2">AI in Education</div>
+            <div class="rounded-xl border border-white/10 px-3 py-2">15k+ steps/day</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-12 divider"></div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience" class="py-16 md:py-24">
+    <div class="mx-auto max-w-7xl px-6">
+      <h2 class="section-title text-2xl md:text-3xl font-semibold">Experience</h2>
+      <div class="mt-8 grid gap-5">
+        <article class="card p-6">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h3 class="text-xl font-semibold">Software Engineer Intern</h3>
+              <div class="text-ink-300">Apple</div>
+            </div>
+            <div class="text-xs text-ink-400 whitespace-nowrap">Jun 2025 – Sep 2025 · Cupertino, CA</div>
+          </div>
+          <ul class="mt-3 text-sm text-ink-200 list-disc pl-5 space-y-2">
+            <li>Built full‑stack features and CoreML pipelines for eSIM Setup & Provisioning.</li>
+            <li>Selected among a small group of interns to present to Craig Federighi.</li>
+          </ul>
+        </article>
+        <article class="card p-6">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h3 class="text-xl font-semibold">Research Assistant (Applied ML), PinCS Lab</h3>
+              <div class="text-ink-300">Stanford University — Advisor: Prof. Chris Gregg</div>
+            </div>
+            <div class="text-xs text-ink-400 whitespace-nowrap">Sep 2024 – Present · Stanford, CA</div>
+          </div>
+          <ul class="mt-3 text-sm text-ink-200 list-disc pl-5 space-y-2">
+            <li>AI‑powered tutoring & grading tools for lower‑division computing courses.</li>
+            <li>Teacher‑facing tools for lesson‑planning and assessment (PPS collaboration).</li>
+          </ul>
+        </article>
+        <article class="card p-6">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h3 class="text-xl font-semibold">Course Assistant — CS221 (AI)</h3>
+              <div class="text-ink-300">Stanford University</div>
+            </div>
+            <div class="text-xs text-ink-400 whitespace-nowrap">Apr 2025 – Jun 2025</div>
+          </div>
+          <ul class="mt-3 text-sm text-ink-200 list-disc pl-5 space-y-2">
+            <li>Revised content, supervised research projects, designed & graded assessments.</li>
+          </ul>
+        </article>
+        <article class="card p-6">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h3 class="text-xl font-semibold">Course Assistant — OIT‑367 (AI/ML for Business)</h3>
+              <div class="text-ink-300">Stanford University</div>
+            </div>
+            <div class="text-xs text-ink-400 whitespace-nowrap">Jan 2025 – Mar 2025</div>
+          </div>
+          <ul class="mt-3 text-sm text-ink-200 list-disc pl-5 space-y-2">
+            <li>Lectures on modern AI tooling; mentored industry‑facing projects.</li>
+          </ul>
+        </article>
+        <article class="card p-6">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h3 class="text-xl font-semibold">Lecturer & Head‑TA — CS10 (BJC)</h3>
+              <div class="text-ink-300">UC Berkeley — Prof. Dan Garcia</div>
+            </div>
+            <div class="text-xs text-ink-400 whitespace-nowrap">Jan 2021 – May 2024 · Berkeley, CA</div>
+          </div>
+          <ul class="mt-3 text-sm text-ink-200 list-disc pl-5 space-y-2">
+            <li>Instructor‑of‑Record (Su’23). Led policy, staff mgmt, budget, grading for large course.</li>
+            <li>Authored and enforced academic integrity & exam security policies.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+    <div class="mt-12 divider"></div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects" class="py-16 md:py-24">
+    <div class="mx-auto max-w-7xl px-6">
+      <h2 class="section-title text-2xl md:text-3xl font-semibold">Projects</h2>
+      <div class="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <a class="card p-6 block hover:shadow-ring transition" href="#">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold">ORIO — Contrastive Rule Inductive Optimization</h3>
+            <span class="text-ink-400">→</span>
+          </div>
+          <p class="mt-2 text-sm text-ink-300">LLM prompting optimizer that contrasts success vs failure to induce rules; +20% over DSPy baselines.</p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <span class="tag">LLM</span><span class="tag">Prompting</span><span class="tag">DSPy</span>
+          </div>
+        </a>
+        <a class="card p-6 block hover:shadow-ring transition" href="#">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold">Skin Lesion Classification</h3>
+            <span class="text-ink-400">→</span>
+          </div>
+          <p class="mt-2 text-sm text-ink-300">Smartphone‑image pipeline into 6 classes; 52.16% accuracy baseline.</p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <span class="tag">CV</span><span class="tag">Healthcare</span><span class="tag">DL</span>
+          </div>
+        </a>
+        <a class="card p-6 block hover:shadow-ring transition" href="#">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold">PintOS</h3>
+            <span class="text-ink-400">→</span>
+          </div>
+          <p class="mt-2 text-sm text-ink-300">Elementary OS for x86 with user programs, multithreading, FAT32 + buffer cache.</p>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <span class="tag">OS</span><span class="tag">C</span><span class="tag">x86</span>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="mt-12 divider"></div>
+  </section>
+
+  <!-- PUBLICATIONS -->
+  <section id="publications" class="py-16 md:py-24">
+    <div class="mx-auto max-w-7xl px-6">
+      <h2 class="section-title text-2xl md:text-3xl font-semibold">Publications</h2>
+      <div class="mt-8 grid gap-4" id="pubList">
+        <article class="card p-6">
+          <div class="flex items-center justify-between">
+            <a class="font-semibold hover:underline" href="#" target="_blank">LLM‑KCI: Leveraging Large Language Models to Identify Programming Knowledge Components</a>
+            <span class="text-xs text-ink-400">2025</span>
+          </div>
+          <div class="text-sm text-ink-300">Preprint / Workshop</div>
+        </article>
+        <article class="card p-6">
+          <div class="flex items-center justify-between">
+            <a class="font-semibold hover:underline" href="#" target="_blank">Mastery Learning through Policy Optimization</a>
+            <span class="text-xs text-ink-400">2025</span>
+          </div>
+          <div class="text-sm text-ink-300">Preprint</div>
+        </article>
+        <article class="card p-6">
+          <div class="flex items-center justify-between">
+            <a class="font-semibold hover:underline" href="#" target="_blank">Steering Student Behavior and Performance Toward Success with Mastery Learning</a>
+            <span class="text-xs text-ink-400">2025</span>
+          </div>
+          <div class="text-sm text-ink-300">Preprint</div>
+        </article>
+      </div>
+    </div>
+    <div class="mt-12 divider"></div>
+  </section>
+
+  <!-- EDUCATION -->
+  <section id="education" class="py-16 md:py-24">
+    <div class="mx-auto max-w-7xl px-6">
+      <h2 class="section-title text-2xl md:text-3xl font-semibold">Education</h2>
+      <div class="mt-8 grid md:grid-cols-2 gap-6" id="eduList">
+        <article class="card p-6">
+          <h3 class="text-lg font-semibold">Stanford University</h3>
+          <div class="text-ink-300">M.S., Computer Science (AI Specialization)</div>
+          <div class="text-xs text-ink-400 mt-1">Aug 2024 – Jun 2026</div>
+          <ul class="mt-3 text-sm text-ink-200 list-disc pl-5 space-y-1">
+            <li>GPA: &gt; 4.0</li>
+            <li>RA: PinCS Lab (Prof. Chris Gregg)</li>
+            <li>CA: CS221 (AI); CA: OIT‑367 (AI/ML for Business)</li>
+            <li>SIGCSE 2026 PC Reviewer; Police Academy 2025; SERT Responder</li>
+            <li>Mandarin Chinese Program</li>
+          </ul>
+        </article>
+        <article class="card p-6">
+          <h3 class="text-lg font-semibold">UC Berkeley</h3>
+          <div class="text-ink-300">B.A., Computer Science & Cognitive Science (Double Major)</div>
+          <div class="text-xs text-ink-400 mt-1">Aug 2020 – May 2024</div>
+          <ul class="mt-3 text-sm text-ink-200 list-disc pl-5 space-y-1">
+            <li>GPA: 4.00/4.00 · Summa Cum Laude</li>
+            <li>CS10 Instructor & Head‑TA; CogSci 100 Head‑TA; Data 104 Dev</li>
+            <li>CDSS Student Advisory Board; EECS Teaching Faculty Hiring Liaison</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+    <div class="mt-12 divider"></div>
+  </section>
+
+  <!-- BLOG (Markdown-backed) -->
+  <section id="blog" class="py-16 md:py-24">
+    <div class="mx-auto max-w-7xl px-6">
+      <h2 class="section-title text-2xl md:text-3xl font-semibold">Blog</h2>
+      <p class="text-ink-400 mt-2 text-sm">Add <code>.md</code> files in <code>/posts</code> and register them below. Each post has <code>title</code>, <code>date</code>, <code>slug</code>, <code>path</code>.</p>
+      <div id="postGrid" class="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+      <dialog id="readModal" class="backdrop:bg-black/60 rounded-xl w-full max-w-3xl p-0">
+        <form method="dialog" class="card overflow-hidden">
+          <div class="p-4 border-b border-white/10 flex items-center justify-between"><b id="readTitle">Post</b><button value="cancel" class="text-ink-400">✕</button></div>
+          <article id="readBody" class="p-5 prose"></article>
+        </form>
+      </dialog>
+    </div>
+    <div class="mt-12 divider"></div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="gallery" class="py-16 md:py-24">
+    <div class="mx-auto max-w-7xl px-6">
+      <h2 class="section-title text-2xl md:text-3xl font-semibold">Gallery</h2>
+      <div class="mt-2 text-ink-400 text-sm">Filter by tag, click to open, view caption/date/location.</div>
+      <div id="photoFilters" class="mt-6 flex flex-wrap gap-2 text-xs"></div>
+      <div id="photoGrid" class="mt-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"></div>
+
+      <dialog id="lightbox" class="backdrop:bg-black/70 rounded-xl w-full max-w-4xl p-0">
+        <form method="dialog" class="card overflow-hidden">
+          <div class="p-3 border-b border-white/10 flex items-center justify-between"><b id="lbCaption">Photo</b><button value="cancel" class="text-ink-400">✕</button></div>
+          <div class="bg-black">
+            <img id="lbImg" alt="" class="w-full max-h-[72vh] object-contain"/>
+          </div>
+          <div class="p-4 text-sm text-ink-300 space-y-1">
+            <div><b>Date:</b> <span id="lbDate"></span></div>
+            <div><b>Location:</b> <span id="lbLoc"></span></div>
+            <div id="lbTags" class="flex flex-wrap gap-2"></div>
+          </div>
+        </form>
+      </dialog>
+    </div>
+    <div class="mt-12 divider"></div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="py-16 md:py-24">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="card p-6">
+        <h2 class="section-title text-2xl md:text-3xl font-semibold">Contact</h2>
+        <p class="text-ink-200 mt-2">Open to collaboration, speaking, and mentoring. Best way to reach me is email.</p>
+        <div class="mt-4 flex flex-wrap gap-3 text-sm">
+          <a class="rounded-full border border-white/20 px-5 py-2 hover:bg-white hover:text-black transition" href="mailto:zaynmalhotra@stanford.edu">zaynmalhotra@stanford.edu</a>
+          <a class="rounded-full border border-white/20 px-5 py-2 hover:bg-white hover:text-black transition" href="https://www.linkedin.com/in/zaynmalhotra" target="_blank">LinkedIn</a>
+          <a class="rounded-full border border-white/20 px-5 py-2 hover:bg-white hover:text-black transition" href="resume.pdf" target="_blank">Résumé (PDF)</a>
+        </div>
+      </div>
+      <p class="text-center text-xs text-ink-400 mt-6">© <span id="year"></span> Vedansh (Zayn) Malhotra — Minimal black & white. Built for GitHub Pages.</p>
+    </div>
+  </section>
+
+  <!-- DATA + SCRIPT -->
+  <script>
+    const siteData = {
+      posts: [
+        { title: 'Don\'t Outsource Your Thinking', date: '2025-08-20', slug: 'dont-outsource-your-thinking', path: 'posts/dont-outsource-your-thinking.md' }
+        // add more like: { title:'Title', date:'YYYY-MM-DD', slug:'slug', path:'posts/slug.md' }
+      ],
+      photos: [
+        // example entries — replace with yours
+        { src:'me-berkeley.jpg', caption:'At Berkeley', date:'2023-05-15', location:'Berkeley, CA', tags:['berkeley','campus'] },
+        { src:'stanford-quad.jpg', caption:'Stanford Quad', date:'2024-10-01', location:'Stanford, CA', tags:['stanford','quad'] }
+      ]
+    };
+
+    // Helpers
+    const $ = (sel, el=document) => el.querySelector(sel);
+    const $$ = (sel, el=document) => Array.from(el.querySelectorAll(sel));
+    const escapeHTML = (s='')=>s.replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
+    const md = (s='') => s
+      .replace(/^###\s?(.*)$/gm,'<h3>$1</h3>')
+      .replace(/^##\s?(.*)$/gm,'<h2>$1</h2>')
+      .replace(/^#\s?(.*)$/gm,'<h1>$1</h1>')
+      .replace(/```([\s\S]*?)```/gm,'<pre><code>$1</code></pre>')
+      .replace(/`([^`]+)`/g,'<code>$1</code>')
+      .replace(/^\s*\-\s+(.*)$/gm,'<ul><li>$1</li></ul>')
+      .replace(/\*\*(.*?)\*\*/g,'<b>$1</b>')
+      .replace(/\*(.*?)\*/g,'<em>$1</em>')
+      .replace(/\n\n/g,'</p><p>')
+      .replace(/^(.+?)$/gm,'<p>$1</p>');
+
+    // Blog
+    function renderPosts(){
+      const grid = $('#postGrid');
+      if (!siteData.posts.length) { grid.innerHTML = '<div class="text-ink-400">No posts yet.</div>'; return; }
+      grid.innerHTML = siteData.posts
+        .sort((a,b)=> (b.date||'').localeCompare(a.date||''))
+        .map(p=>`
+          <article class="card p-6 flex flex-col">
+            <h3 class="text-lg font-semibold">${escapeHTML(p.title)}</h3>
+            <div class="text-xs text-ink-400">${escapeHTML(p.date||'')}</div>
+            <div class="mt-4 flex gap-2">
+              <button data-slug="${p.slug}" class="rounded-full border border-white/20 px-4 py-1 text-sm hover:bg-white hover:text-black transition">Read</button>
+              <a href="${p.path}" target="_blank" class="rounded-full border border-white/20 px-4 py-1 text-sm hover:bg-white hover:text-black transition">Open .md</a>
+            </div>
+          </article>`).join('');
+      $$('.card button[data-slug]').forEach(btn=>btn.onclick = ()=> openPost(btn.dataset.slug));
+    }
+    async function openPost(slug){
+      const post = siteData.posts.find(p=>p.slug===slug);
+      if (!post) return;
+      const res = await fetch(post.path);
+      const text = await res.text();
+      $('#readTitle').textContent = post.title;
+      $('#readBody').innerHTML = md(escapeHTML(text));
+      $('#readModal').showModal();
+    }
+
+    // Gallery
+    function renderPhotos(){
+      const grid = $('#photoGrid');
+      const filters = $('#photoFilters');
+      const tags = new Set();
+      siteData.photos.forEach(p=> (p.tags||[]).forEach(t=>tags.add(t)) );
+      filters.innerHTML = ['all', ...Array.from(tags)].map(t=>`<button class="tag" data-tag="${t}">${t}</button>`).join('');
+      filters.querySelectorAll('button').forEach(b=> b.onclick = ()=> applyTag(b.dataset.tag));
+      function applyTag(tag){
+        render(tag==='all' ? siteData.photos : siteData.photos.filter(p=> (p.tags||[]).includes(tag)));
+      }
+      function render(list){
+        grid.innerHTML = list.map(p=>`
+          <figure class="card overflow-hidden cursor-pointer" data-src="${p.src}" data-caption="${escapeHTML(p.caption||'')}" data-date="${escapeHTML(p.date||'')}" data-location="${escapeHTML(p.location||'')}" data-tags='${JSON.stringify(p.tags||[])}'>
+            <img src="photos/${p.src}" alt="${escapeHTML(p.caption||p.src)}" class="w-full h-48 object-cover"/>
+            <figcaption class="p-3 text-sm text-ink-300">
+              <div class="font-semibold">${escapeHTML(p.caption||'')}</div>
+              <div class="text-xs text-ink-400">${escapeHTML(p.date||'')} · ${escapeHTML(p.location||'')}</div>
+            </figcaption>
+          </figure>`).join('');
+        $$('#photoGrid figure').forEach(fig=> fig.onclick = ()=> openLightbox(fig));
+      }
+      applyTag('all');
+    }
+    function openLightbox(fig){
+      const src = fig.dataset.src;
+      const cap = fig.dataset.caption;
+      const date = fig.dataset.date;
+      const loc = fig.dataset.location;
+      const tags = JSON.parse(fig.dataset.tags||'[]');
+      $('#lbImg').src = `photos/${src}`;
+      $('#lbCaption').textContent = cap || src;
+      $('#lbDate').textContent = date || '—';
+      $('#lbLoc').textContent = loc || '—';
+      $('#lbTags').innerHTML = tags.map(t=>`<span class="tag">${escapeHTML(t)}</span>`).join('');
+      $('#lightbox').showModal();
+    }
+
+    // Init
+    function init(){
+      renderPosts();
+      renderPhotos();
+      const y = document.createElement('span');
+      const footerYear = document.getElementById('year');
+      if (footerYear) footerYear.textContent = new Date().getFullYear();
+    }
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
